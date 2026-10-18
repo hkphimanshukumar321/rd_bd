@@ -1213,14 +1213,14 @@
             <p class="silver-jubilee-badge">✦ Silver Jubilee ✦</p>
 
             <!-- Interactive Button to trigger Camera + Mic permissions cleanly on mobile -->
-            <button class="start-sensors-btn" id="startSensorsBtn">📷 Tap to Enable Camera & Blow 🌬️</button>
+            <button class="start-sensors-btn" id="startSensorsBtn">🎂 Tap Here to Unlock the Magic! ✨</button>
 
             <!-- Live Selfie Candle Cam (Detects Pout & Face) -->
             <div class="candle-cam-container" id="candleCamContainer">
                 <div class="candle-cam-bubble" id="candleCamBubble">
                     <video id="cameraVideo" autoplay playsinline muted></video>
                     <div class="cam-lens-glow"></div>
-                    <div class="cam-pout-badge" id="camPoutBadge">👄 Pout Here!</div>
+                    <div class="cam-pout-badge" id="camPoutBadge">👄 Lean close!</div>
                 </div>
             </div>
 
@@ -1350,7 +1350,7 @@
                     <div class="blow-meter-fill" id="volumeFill"></div>
                     <div class="blow-meter-target-line" title="Blow Out Threshold"></div>
                 </div>
-                <p class="blow-meter-hint" id="blowMeterHint">Huff & puff to fill the meter! 💨</p>
+                <p class="blow-meter-hint" id="blowMeterHint">Blow on your phone or tap the cake! 💨</p>
             </div>
 
             <!-- Hidden audio sensing (runs silently behind the scenes) -->
@@ -1364,13 +1364,13 @@
             <div class="blow-btn-container">
                 <button class="blow-btn" id="blowBtn">
                     <span class="blow-emoji">🌬️</span>
-                    <span class="blow-text">Blow / Tap</span>
+                    <span class="blow-text">Hold to Blow</span>
                 </button>
                 <svg class="blow-progress-ring" viewBox="0 0 150 150">
                     <circle id="progressCircle" cx="75" cy="75" r="70"></circle>
                 </svg>
             </div>
-            <p class="swipe-hint">💨 Blow on the screen or hold the button!</p>
+            <p class="swipe-hint">💨 Blow on phone • Tap cake rapidly • Hold button!</p>
         </div>
 
         <!-- ══════ SCENE 2: CELEBRATION ══════ -->
@@ -1592,7 +1592,7 @@
         }
 
         // ══════════════════════════════════════════════════════
-        // ── DUAL CAMERA POUT & MIC BLOW DETECTION ────────────
+        // ── ULTRA-ROBUST BLOW DETECTION (Smartphone-Optimized) ─
         // ══════════════════════════════════════════════════════
         let candlesLit = true;
         let mediaStream = null;
@@ -1613,177 +1613,256 @@
         const camPoutBadge = document.getElementById('camPoutBadge');
         const cameraVideo = document.getElementById('cameraVideo');
 
-        // Offscreen canvas for zero-latency 60fps mouth / pout optical analysis
+        // Offscreen canvas for camera analysis
         const offCanvas = document.createElement('canvas');
         offCanvas.width = 64;
         offCanvas.height = 64;
         const offCtx = offCanvas.getContext('2d', { willReadFrequently: true });
 
-        let prevMouthPixels = null;
+        // Tracking variables
+        let prevFrameBrightness = -1;
         let lastPoutScore = 0;
-        let blowStartTime = 0;
-        let isBlowing = false;
+        let sensorBlowStartTime = 0;
+        let isSensorBlowing = false;
 
-        // ── Camera Pout Analysis (detects pursing lips / blowing mouth shape)
-        function analyzeCameraPout() {
+        // Rapid-tap tracking (tapping on cake area = blowing!)
+        let tapTimes = [];
+        let tapBlowScore = 0;
+
+        // Accumulated blow energy (persists between frames for smoother UX)
+        let blowEnergy = 0;
+
+        // Mic calibration: measure baseline noise for first ~30 frames
+        let micBaseline = 0.005;
+        let micCalibrationFrames = 0;
+        let micCalibrationSum = 0;
+        const MIC_CALIBRATION_COUNT = 30;
+
+        // ── Camera Proximity + Motion Detection ─────────────
+        // Instead of fragile pout detection, detect:
+        // 1. Face getting CLOSER (overall brightness drops as face fills frame)
+        // 2. Significant motion (leaning in to blow)
+        function analyzeCameraProximity() {
             if (!cameraActive || !cameraVideo || cameraVideo.readyState < 2) return 0;
 
             try {
                 offCtx.drawImage(cameraVideo, 0, 0, 64, 64);
                 const frame = offCtx.getImageData(0, 0, 64, 64).data;
 
-                // Center-lower face region where mouth is located (X: 20-44, Y: 36-52)
-                let mouthDelta = 0;
-                let pixelCount = 0;
-                let centerRedIntensity = 0;
-                let outerRedIntensity = 0;
-                let centerDarkness = 0;
+                // Full-frame average brightness
+                let totalBrightness = 0;
+                let centerBrightness = 0;
+                let centerCount = 0;
+                const totalPixels = 64 * 64;
 
-                const currentPixels = [];
-
-                for (let y = 36; y <= 52; y++) {
-                    for (let x = 20; x <= 44; x++) {
+                for (let y = 0; y < 64; y++) {
+                    for (let x = 0; x < 64; x++) {
                         const idx = (y * 64 + x) * 4;
-                        const r = frame[idx];
-                        const g = frame[idx + 1];
-                        const b = frame[idx + 2];
-                        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+                        const brightness = (frame[idx] * 299 + frame[idx+1] * 587 + frame[idx+2] * 114) / 1000;
+                        totalBrightness += brightness;
 
-                        currentPixels.push(brightness);
-
-                        if (prevMouthPixels && prevMouthPixels.length > pixelCount) {
-                            mouthDelta += Math.abs(brightness - prevMouthPixels[pixelCount]);
+                        // Center region (face area when close)
+                        if (x >= 16 && x < 48 && y >= 16 && y < 48) {
+                            centerBrightness += brightness;
+                            centerCount++;
                         }
-
-                        // Lip redness check
-                        const redDiff = r - (g + b) / 2;
-                        const isCenter = (x >= 28 && x <= 36 && y >= 40 && y <= 48);
-
-                        if (isCenter) {
-                            centerRedIntensity += Math.max(0, redDiff);
-                            centerDarkness += (255 - brightness);
-                        } else {
-                            outerRedIntensity += Math.max(0, redDiff);
-                        }
-
-                        pixelCount++;
                     }
                 }
 
-                prevMouthPixels = currentPixels;
+                const avgBrightness = totalBrightness / totalPixels;
+                const avgCenter = centerBrightness / (centerCount || 1);
 
-                // Motion in mouth area from leaning in or puckering lips
-                const avgDelta = mouthDelta / (pixelCount || 1);
-                const motionScore = Math.min(avgDelta / 7.0, 1.0);
-
-                // Pucker/pout concentration in the center of the mouth
-                const centerRatio = centerRedIntensity / (outerRedIntensity + 1);
-                const puckerScore = Math.min(Math.max((centerRatio - 0.25) / 0.75, 0), 1.0);
-                const shadowScore = Math.min(centerDarkness / (pixelCount * 0.4 * 160), 1.0);
-
-                // Combined optical score
-                let rawScore = (motionScore * 0.45) + (Math.max(puckerScore, shadowScore) * 0.55);
-                if (motionScore > 0.35 && (puckerScore > 0.2 || shadowScore > 0.3)) {
-                    rawScore += 0.25;
+                // Score 1: Brightness change from previous frame (motion)
+                let motionScore = 0;
+                if (prevFrameBrightness >= 0) {
+                    const brightnessDelta = Math.abs(avgBrightness - prevFrameBrightness);
+                    // Even small changes (3-15 units) from leaning in count
+                    motionScore = Math.min(brightnessDelta / 8.0, 1.0);
                 }
+                prevFrameBrightness = avgBrightness;
 
-                // Smooth score
-                lastPoutScore = (lastPoutScore * 0.35) + (Math.min(Math.max(rawScore, 0), 1) * 0.65);
+                // Score 2: Center getting darker relative to edges (face proximity)
+                // When you bring your face close, center gets darker/skin-colored
+                const edgeBrightness = (totalBrightness - centerBrightness) / (totalPixels - centerCount);
+                const proximityRatio = edgeBrightness / (avgCenter + 1);
+                const proximityScore = Math.min(Math.max((proximityRatio - 1.0) / 0.5, 0), 1.0);
+
+                // Combined: either motion or proximity triggers
+                let rawScore = Math.max(motionScore * 0.7, proximityScore) + (motionScore * 0.3);
+                rawScore = Math.min(rawScore, 1.0);
+
+                // Smooth
+                lastPoutScore = (lastPoutScore * 0.4) + (rawScore * 0.6);
                 return lastPoutScore;
             } catch (e) {
                 return 0;
             }
         }
 
-        // ── Microphone Blow Analysis (tuned for smartphone hardware)
+        // ── Microphone Blow Analysis (ULTRA-SENSITIVE for smartphones)
+        // Uses raw time-domain RMS which bypasses FFT bin issues,
+        // plus low-frequency energy for wind detection
         function analyzeMicBlow() {
             if (!analyser || !micActive) return 0;
 
-            const freqData = new Uint8Array(analyser.frequencyBinCount);
-            analyser.getByteFrequencyData(freqData);
-
-            // Wind turbulence / breath air causes huge spike in low bins (bins 0 to 6)
-            let lowSum = 0;
-            const numBins = Math.min(6, freqData.length);
-            for (let i = 0; i < numBins; i++) {
-                lowSum += freqData[i];
-            }
-            const lowAvg = lowSum / numBins; // 0 - 255
-
-            // RMS volume
+            // Method 1: Raw RMS from time domain (most reliable across devices)
             const timeData = new Float32Array(analyser.fftSize);
             analyser.getFloatTimeDomainData(timeData);
             let sumSq = 0;
+            let peakAmp = 0;
             for (let i = 0; i < timeData.length; i++) {
+                const absVal = Math.abs(timeData[i]);
                 sumSq += timeData[i] * timeData[i];
+                if (absVal > peakAmp) peakAmp = absVal;
             }
             const rms = Math.sqrt(sumSq / timeData.length);
 
-            // Smartphone sensitivity thresholds:
-            // Resting air is lowAvg ~10-15. Direct blow is 35-180.
-            const lowScore = Math.min(Math.max((lowAvg - 18) / 32, 0), 1.0);
-            const rmsScore = Math.min(Math.max((rms - 0.012) / 0.035, 0), 1.0);
+            // Calibrate baseline: first 30 frames set the noise floor
+            if (micCalibrationFrames < MIC_CALIBRATION_COUNT) {
+                micCalibrationSum += rms;
+                micCalibrationFrames++;
+                if (micCalibrationFrames === MIC_CALIBRATION_COUNT) {
+                    micBaseline = (micCalibrationSum / MIC_CALIBRATION_COUNT) * 1.5 + 0.002;
+                }
+                return 0; // Don't trigger during calibration
+            }
 
-            return Math.max(lowScore, rmsScore);
+            // Method 2: Low-frequency FFT energy (breath/wind signature)
+            const freqData = new Uint8Array(analyser.frequencyBinCount);
+            analyser.getByteFrequencyData(freqData);
+            let lowSum = 0;
+            const lowBins = Math.min(10, freqData.length);
+            for (let i = 0; i < lowBins; i++) {
+                lowSum += freqData[i];
+            }
+            const lowAvg = lowSum / lowBins;
+
+            // RMS score (above calibrated baseline)
+            // Smartphone resting noise with suppression off: RMS ~0.002-0.008
+            // Light blow: RMS ~0.01-0.03
+            // Medium blow: RMS ~0.03-0.08
+            // Hard blow: RMS ~0.08+
+            const rmsAboveBaseline = Math.max(0, rms - micBaseline);
+            const rmsScore = Math.min(rmsAboveBaseline / 0.025, 1.0);
+
+            // Peak amplitude score (catches sharp puffs)
+            const peakScore = Math.min(Math.max((peakAmp - micBaseline * 2) / 0.06, 0), 1.0);
+
+            // Low-frequency score (wind is concentrated in low frequencies)
+            const lowScore = Math.min(Math.max((lowAvg - 12) / 25, 0), 1.0);
+
+            // Take the best signal from all three methods
+            const bestScore = Math.max(rmsScore, peakScore * 0.9, lowScore * 0.85);
+            return bestScore;
         }
 
-        // ── Unified Sensor Processing Loop
+        // ── Rapid Tap Detector (stealth blow input!) ─────────
+        // Tapping rapidly on the cake area acts like blowing
+        function registerTap() {
+            if (!candlesLit) return;
+            const now = Date.now();
+            tapTimes.push(now);
+            // Keep only taps in the last 1.5 seconds
+            tapTimes = tapTimes.filter(t => now - t < 1500);
+
+            // 3+ taps in 1.5s = blowing (ramps up with more taps)
+            if (tapTimes.length >= 3) {
+                tapBlowScore = Math.min((tapTimes.length - 2) / 4, 1.0);
+            } else {
+                tapBlowScore = 0;
+            }
+        }
+
+        // Register taps on the cake area
+        const cakeContainer = document.getElementById('cakeContainer');
+        if (cakeContainer) {
+            cakeContainer.addEventListener('click', registerTap);
+            cakeContainer.addEventListener('touchstart', (e) => {
+                e.stopPropagation();
+                registerTap();
+            }, { passive: true });
+        }
+
+        // ── Unified Sensor Processing Loop ───────────────────
         function runSensors() {
             if (!candlesLit) return;
 
             const micScore = analyzeMicBlow();
-            const poutScore = analyzeCameraPout();
+            const camScore = analyzeCameraProximity();
 
+            // Decay tap score over time
+            const now = Date.now();
+            tapTimes = tapTimes.filter(t => now - t < 1500);
+            if (tapTimes.length < 3) tapBlowScore *= 0.92;
+
+            // ── Combined Multi-Input Score ──
+            // ANY input contributing even partially helps!
             let combinedScore = 0;
 
-            if (cameraActive && micActive) {
-                // When user pouts AND gives air to mic: rapid instant trigger!
-                if (poutScore > 0.25 && micScore > 0.2) {
-                    combinedScore = Math.min(1.0, (poutScore + micScore) * 0.95 + 0.2);
-                } else {
-                    combinedScore = Math.max(micScore * 1.3, poutScore * 1.25);
-                }
-            } else if (cameraActive) {
-                combinedScore = poutScore * 1.35;
-            } else if (micActive) {
-                combinedScore = micScore * 1.4;
+            // Add up all active sources (additive, not max)
+            if (micActive) combinedScore += micScore * 0.7;
+            if (cameraActive) combinedScore += camScore * 0.5;
+            combinedScore += tapBlowScore * 0.4;
+
+            // Bonus when multiple inputs fire together
+            const activeInputs = (micScore > 0.15 ? 1 : 0) + (camScore > 0.15 ? 1 : 0) + (tapBlowScore > 0.1 ? 1 : 0);
+            if (activeInputs >= 2) combinedScore *= 1.3;
+
+            combinedScore = Math.min(combinedScore, 1.0);
+
+            // Smooth energy accumulator (builds up, decays slowly)
+            if (combinedScore > 0.1) {
+                blowEnergy = Math.min(1.0, blowEnergy + combinedScore * 0.04);
+            } else {
+                blowEnergy *= 0.96; // Slow decay
             }
 
-            const meterPct = Math.min(100, Math.round(combinedScore * 100));
+            const displayScore = Math.max(combinedScore, blowEnergy);
+            const meterPct = Math.min(100, Math.round(displayScore * 100));
 
             if (volumeFill) volumeFill.style.width = meterPct + '%';
             if (blowMeterVal) blowMeterVal.textContent = meterPct + '%';
 
-            // Pout visual feedback on selfie camera
-            if (poutScore > 0.3) {
-                if (camPoutBadge) camPoutBadge.textContent = '✨ Pout Detected! 🌬️';
+            // Camera visual feedback
+            if (camScore > 0.2) {
+                if (camPoutBadge) camPoutBadge.textContent = '✨ Whoosh! 🌬️';
                 if (candleCamBubble) candleCamBubble.classList.add('pouting');
             } else {
-                if (camPoutBadge) camPoutBadge.textContent = '👄 Pout Here!';
+                if (camPoutBadge) camPoutBadge.textContent = '👄 Lean close!';
                 if (candleCamBubble) candleCamBubble.classList.remove('pouting');
             }
 
-            // High blow threshold (extinguish trigger)
-            if (combinedScore > 0.65) {
+            // Blow threshold check
+            if (displayScore > 0.45) {
                 if (blowMeterWrapper) blowMeterWrapper.classList.add('blowing');
-                if (blowMeterHint) blowMeterHint.textContent = '🌬️ Blowing hard! Keep going!';
 
-                if (!isBlowing) {
-                    isBlowing = true;
-                    blowStartTime = Date.now();
+                if (!isSensorBlowing) {
+                    isSensorBlowing = true;
+                    sensorBlowStartTime = Date.now();
                 }
 
-                const blowDuration = Date.now() - blowStartTime;
-                const blowRatio = Math.min(blowDuration / 280, 1);
+                const blowDuration = Date.now() - sensorBlowStartTime;
+                const blowRatio = Math.min(blowDuration / 600, 1); // 0.6s sustained blow
+
+                if (blowMeterHint) {
+                    if (blowRatio > 0.7) blowMeterHint.textContent = '🔥 Almost there!! 💨💨';
+                    else blowMeterHint.textContent = '🌬️ Keep blowing! 💨';
+                }
+
                 updateFlamesDuringBlow(blowRatio);
 
-                if (blowDuration >= 280) {
+                // Update the circular progress ring too
+                const offset = CIRCUMFERENCE * (1 - blowRatio);
+                progressCircle.style.strokeDashoffset = offset;
+
+                if (blowRatio >= 1) {
                     extinguishCandles();
                     return;
                 }
             } else {
-                if (isBlowing) {
-                    isBlowing = false;
+                if (isSensorBlowing) {
+                    isSensorBlowing = false;
+                    // Only reset flames if we haven't progressed far
                     const flames = document.querySelectorAll('.flame-wrapper');
                     flames.forEach(flame => {
                         if (!flame.classList.contains('extinguished')) {
@@ -1793,10 +1872,12 @@
                     });
                     const glow = document.getElementById('candleGlow');
                     if (glow) glow.style.opacity = '';
+                    progressCircle.style.strokeDashoffset = CIRCUMFERENCE;
                 }
                 if (blowMeterWrapper) blowMeterWrapper.classList.remove('blowing');
                 if (blowMeterHint) {
-                    blowMeterHint.textContent = meterPct > 25 ? 'Blow harder to pass the line! 💨' : 'Pout at camera & blow into mic! 💨';
+                    if (meterPct > 20) blowMeterHint.textContent = 'Keep going, blow harder! 💨';
+                    else blowMeterHint.textContent = 'Blow on your phone or tap the cake! 💨';
                 }
             }
 
@@ -1809,7 +1890,7 @@
             sensorsInitialized = true;
 
             if (startSensorsBtn) {
-                startSensorsBtn.textContent = '⏳ Starting Camera & Mic...';
+                startSensorsBtn.textContent = '✨ Summoning birthday magic... 🧙‍♀️';
             }
 
             try {
@@ -1826,80 +1907,110 @@
                     throw new Error('getUserMedia not supported');
                 }
 
-                // Request user camera and microphone together
+                // Try camera + mic together first
                 try {
                     mediaStream = await navigator.mediaDevices.getUserMedia({
                         audio: {
+                            // CRITICAL: Disable ALL processing that kills breath sound
                             echoCancellation: false,
                             noiseSuppression: false,
-                            autoGainControl: true
+                            autoGainControl: false,
+                            // Some browsers support these extra constraints
+                            channelCount: 1,
+                            sampleRate: 44100
                         },
                         video: {
                             facingMode: 'user',
-                            width: { ideal: 320, max: 480 },
-                            height: { ideal: 240, max: 360 }
+                            width: { ideal: 160, max: 320 },
+                            height: { ideal: 120, max: 240 }
                         }
                     });
                     cameraActive = true;
                     micActive = true;
                 } catch (camErr) {
-                    console.log('Camera rejected or unavailable, falling back to audio only:', camErr);
-                    mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                    micActive = true;
+                    // Fallback: try audio only with processing disabled
+                    try {
+                        mediaStream = await navigator.mediaDevices.getUserMedia({
+                            audio: {
+                                echoCancellation: false,
+                                noiseSuppression: false,
+                                autoGainControl: false
+                            }
+                        });
+                        micActive = true;
+                    } catch (audioErr) {
+                        // Last resort: try audio with default settings
+                        try {
+                            mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                            micActive = true;
+                        } catch (e) {
+                            throw e;
+                        }
+                    }
                     cameraActive = false;
                 }
 
                 // Start camera video element
                 if (cameraActive && cameraVideo) {
                     cameraVideo.srcObject = mediaStream;
-                    cameraVideo.play().catch(e => console.log('Camera video play error:', e));
+                    cameraVideo.play().catch(() => {});
                     if (candleCamContainer) candleCamContainer.style.display = 'flex';
                 }
 
-                // Setup Audio Analyser
+                // Setup Audio Analyser with settings optimized for breath detection
                 if (micActive && micAudioCtx) {
                     const source = micAudioCtx.createMediaStreamSource(mediaStream);
+
+                    // Add a low-pass filter to boost low-frequency breath sounds
+                    const lowPass = micAudioCtx.createBiquadFilter();
+                    lowPass.type = 'lowpass';
+                    lowPass.frequency.value = 800; // Breath air is mostly <500Hz
+                    lowPass.Q.value = 0.7;
+
+                    // Boost gain to amplify quiet breath sounds
+                    const boostGain = micAudioCtx.createGain();
+                    boostGain.gain.value = 3.0; // 3x amplification
+
                     analyser = micAudioCtx.createAnalyser();
-                    analyser.fftSize = 512;
-                    analyser.smoothingTimeConstant = 0.25;
-                    source.connect(analyser);
+                    analyser.fftSize = 1024; // More frequency resolution
+                    analyser.smoothingTimeConstant = 0.3;
+
+                    source.connect(lowPass);
+                    lowPass.connect(boostGain);
+                    boostGain.connect(analyser);
                 }
 
                 if (startSensorsBtn) {
-                    startSensorsBtn.innerHTML = cameraActive ? '📷 Cam & 🎤 Mic Active: Pout & Blow! 🌬️' : '🎤 Mic Active: Blow into your mic! 🌬️';
+                    startSensorsBtn.innerHTML = '✨ Magic Ready! Now blow the candles! 🌬️💨';
                     startSensorsBtn.classList.add('active');
                     setTimeout(() => {
                         startSensorsBtn.style.opacity = '0';
                         setTimeout(() => startSensorsBtn.style.display = 'none', 500);
-                    }, 3500);
+                    }, 2500);
                 }
 
                 runSensors();
 
             } catch (err) {
-                console.log('Sensors denied or error:', err);
+                console.log('Sensors error:', err);
                 if (startSensorsBtn) {
-                    startSensorsBtn.textContent = '💨 Hold the button below to blow!';
+                    startSensorsBtn.textContent = '💨 Hold the big button below to blow!';
                     startSensorsBtn.classList.add('fallback');
+                    setTimeout(() => {
+                        startSensorsBtn.style.opacity = '0.5';
+                    }, 3000);
                 }
             }
         }
 
-        // Tap/click button or anywhere on screen starts camera & mic seamlessly
+        // Only init sensors when the dedicated button is tapped (not on random page clicks)
         if (startSensorsBtn) {
-            startSensorsBtn.addEventListener('click', initSensors);
-            startSensorsBtn.addEventListener('touchend', initSensors);
+            startSensorsBtn.addEventListener('click', (e) => { e.stopPropagation(); initSensors(); });
+            startSensorsBtn.addEventListener('touchend', (e) => { e.preventDefault(); e.stopPropagation(); initSensors(); });
         }
 
-        document.addEventListener('click', function pageTapSensors() {
-            if (!sensorsInitialized && candlesLit) initSensors();
-        }, { once: true });
-        document.addEventListener('touchstart', function pageTouchSensors() {
-            if (!sensorsInitialized && candlesLit) initSensors();
-        }, { passive: true, once: true });
-
         // ══════════════════════════════════════════════════════
-        // ── HOLD-TO-BLOW (Fallback) ──────────────────────────
+        // ── HOLD-TO-BLOW (Always-available fallback) ─────────
         // ══════════════════════════════════════════════════════
         const blowBtn = document.getElementById('blowBtn');
         const progressCircle = document.getElementById('progressCircle');
@@ -1907,28 +2018,25 @@
         progressCircle.style.strokeDasharray = CIRCUMFERENCE;
         progressCircle.style.strokeDashoffset = CIRCUMFERENCE;
 
-        const BLOW_HOLD_TIME = 1800;  // 1.8 seconds to fully blow out
+        const BLOW_HOLD_TIME = 1800;
         let holdStartTime = 0;
         let holdInterval = null;
         let isHolding = false;
-        let blowProgress = 0;         // 0 to 1
+        let blowProgress = 0;
 
-        // ── Progressive flame effects during hold ────────────
         function updateFlamesDuringBlow(progress) {
             const flames = document.querySelectorAll('.flame-wrapper');
-            const flameOrder = [2, 0, 4, 1, 3]; // center first, then outward
+            const flameOrder = [2, 0, 4, 1, 3];
 
             flameOrder.forEach((idx, i) => {
                 const flame = flames[idx];
                 if (!flame) return;
 
-                // Each flame starts shrinking at a staggered point
-                const flameStart = i * 0.15; // 0, 0.15, 0.30, 0.45, 0.60
+                const flameStart = i * 0.15;
                 const flameEnd = flameStart + 0.35;
                 const flameProgress = Math.max(0, Math.min(1, (progress - flameStart) / (flameEnd - flameStart)));
 
                 if (flameProgress >= 1) {
-                    // This flame is out
                     flame.classList.add('extinguished');
                     if (!flame.dataset.smoked) {
                         flame.dataset.smoked = 'true';
@@ -1936,7 +2044,6 @@
                         playWhooshSound();
                     }
                 } else if (flameProgress > 0) {
-                    // Flame is flickering/shrinking
                     const scale = 1 - flameProgress * 0.8;
                     const wobble = Math.sin(Date.now() * 0.02) * flameProgress * 15;
                     flame.style.transform = `translateX(-50%) scale(${scale}) rotate(${wobble}deg)`;
@@ -1944,12 +2051,10 @@
                 }
             });
 
-            // Candle glow fades
             const glow = document.getElementById('candleGlow');
             glow.style.opacity = 1 - progress;
         }
 
-        // ── Hold start ───────────────────────────────────────
         function startBlow() {
             if (!candlesLit || isHolding) return;
             isHolding = true;
@@ -1962,45 +2067,33 @@
                 const elapsed = Date.now() - holdStartTime;
                 blowProgress = Math.min(elapsed / BLOW_HOLD_TIME, 1);
 
-                // Update circular progress
                 const offset = CIRCUMFERENCE * (1 - blowProgress);
                 progressCircle.style.strokeDashoffset = offset;
 
-                // Also update the blow intensity meter
                 const holdPct = Math.round(blowProgress * 100);
-                const blowFill = document.getElementById('volumeFill');
-                const blowVal = document.getElementById('blowMeterVal');
-                const blowHint = document.getElementById('blowMeterHint');
-                const blowWrap = document.getElementById('blowMeterWrapper');
+                if (volumeFill) volumeFill.style.width = holdPct + '%';
+                if (blowMeterVal) blowMeterVal.textContent = holdPct + '%';
+                if (blowMeterWrapper) blowMeterWrapper.classList.add('blowing');
+                if (blowMeterHint) blowMeterHint.textContent = '💨 Blowing out the candles!';
 
-                if (blowFill) blowFill.style.width = holdPct + '%';
-                if (blowVal) blowVal.textContent = holdPct + '%';
-                if (blowWrap) blowWrap.classList.add('blowing');
-                if (blowHint) blowHint.textContent = '💨 Holding... blowing out!';
-
-                // Update flames progressively
                 updateFlamesDuringBlow(blowProgress);
 
-                // Update button text
                 if (blowProgress < 1) {
                     blowBtn.querySelector('.blow-emoji').textContent = blowProgress > 0.5 ? '💨' : '🌬️';
                 }
 
-                // Complete!
                 if (blowProgress >= 1) {
                     completeBlowOut();
                 }
             }, 30);
         }
 
-        // ── Hold end (released early) ────────────────────────
         function stopBlow() {
             if (!isHolding) return;
             isHolding = false;
             clearInterval(holdInterval);
             blowBtn.classList.remove('blowing');
 
-            // If not complete, revert flames back
             if (candlesLit && blowProgress < 1) {
                 const flames = document.querySelectorAll('.flame-wrapper');
                 flames.forEach(flame => {
@@ -2010,28 +2103,19 @@
                     }
                 });
 
-                // Reset progress ring smoothly
                 blowProgress = 0;
                 progressCircle.style.strokeDashoffset = CIRCUMFERENCE;
 
-                // Reset blow intensity meter
-                const blowFill = document.getElementById('volumeFill');
-                const blowVal = document.getElementById('blowMeterVal');
-                const blowHint = document.getElementById('blowMeterHint');
-                const blowWrap = document.getElementById('blowMeterWrapper');
-                if (blowFill) blowFill.style.width = '0%';
-                if (blowVal) blowVal.textContent = '0%';
-                if (blowWrap) blowWrap.classList.remove('blowing');
-                if (blowHint) blowHint.textContent = 'Huff & puff to fill the meter! 💨';
+                if (volumeFill) volumeFill.style.width = '0%';
+                if (blowMeterVal) blowMeterVal.textContent = '0%';
+                if (blowMeterWrapper) blowMeterWrapper.classList.remove('blowing');
+                if (blowMeterHint) blowMeterHint.textContent = 'Blow on your phone or tap the cake! 💨';
 
-                // Reset glow
                 document.getElementById('candleGlow').style.opacity = '';
-
                 blowBtn.querySelector('.blow-emoji').textContent = '🌬️';
             }
         }
 
-        // ── Complete blow out ─────────────────────────────────
         function completeBlowOut() {
             clearInterval(holdInterval);
             isHolding = false;
@@ -2039,7 +2123,6 @@
             extinguishCandles();
         }
 
-        // ── Event listeners (works on both PC + mobile) ──────
         blowBtn.addEventListener('mousedown', startBlow);
         blowBtn.addEventListener('mouseup', stopBlow);
         blowBtn.addEventListener('mouseleave', stopBlow);
@@ -2070,7 +2153,6 @@
             }
         }
 
-        // Request motion permission (iOS 13+)
         if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
             document.addEventListener('click', function requestMotion() {
                 DeviceMotionEvent.requestPermission()
