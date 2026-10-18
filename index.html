@@ -125,7 +125,8 @@
             justify-content: center;
             gap: 16px;
             position: relative;
-            margin: 0 auto 15px;
+            margin: 10px auto 15px;
+            padding-top: 48px;
             width: 100%;
         }
 
@@ -678,9 +679,127 @@
             50% { transform: scale(1.15); }
         }
 
-        /* ── Audio sensing (hidden from UI) ──────────── */
+        /* ── Audio & Camera sensing ──────────────────── */
         .mic-section {
             display: none !important;
+        }
+
+        /* ── Candle Cam Bubble (Selfie Pout Detection) ── */
+        .candle-cam-container {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            margin: 2px auto 10px;
+            position: relative;
+            z-index: 12;
+        }
+
+        .candle-cam-bubble {
+            position: relative;
+            width: 82px;
+            height: 82px;
+            border-radius: 50%;
+            overflow: visible;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.5), 0 0 20px rgba(255, 215, 0, 0.4);
+            border: 3px solid #ffd700;
+            transition: all 0.3s ease;
+            background: #000;
+        }
+
+        .candle-cam-bubble.pouting {
+            border-color: #00e5ff;
+            box-shadow: 0 0 25px rgba(0, 229, 255, 0.85), 0 0 35px rgba(255, 215, 0, 0.6);
+            transform: scale(1.08);
+        }
+
+        .candle-cam-bubble video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+            transform: scaleX(-1);
+            display: block;
+        }
+
+        .cam-lens-glow {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: 50%;
+            pointer-events: none;
+            box-shadow: inset 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        .cam-pout-badge {
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #ffd700, #ff8c00);
+            color: #000;
+            font-size: 0.68rem;
+            font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 10px;
+            white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            pointer-events: none;
+            transition: all 0.25s ease;
+        }
+
+        .candle-cam-bubble.pouting .cam-pout-badge {
+            background: linear-gradient(135deg, #00e5ff, #76ff03);
+            color: #000;
+            box-shadow: 0 0 12px #00e5ff;
+        }
+
+        /* ── Start Sensors Button ── */
+        .start-sensors-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            margin: 0 auto 12px;
+            padding: 8px 20px;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.22), rgba(255, 105, 180, 0.22));
+            border: 2px solid rgba(255, 215, 0, 0.7);
+            color: #ffd700;
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 700;
+            border-radius: 25px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.25);
+            backdrop-filter: blur(8px);
+            transition: all 0.3s ease;
+            animation: pulseSensorsBtn 2s infinite alternate;
+            user-select: none;
+            -webkit-user-select: none;
+            position: relative;
+            z-index: 15;
+        }
+
+        @keyframes pulseSensorsBtn {
+            0% { transform: scale(1); box-shadow: 0 4px 15px rgba(255, 215, 0, 0.2); }
+            100% { transform: scale(1.04); box-shadow: 0 0 25px rgba(255, 215, 0, 0.5), 0 0 35px rgba(255, 105, 180, 0.3); }
+        }
+
+        .start-sensors-btn:hover, .start-sensors-btn:active {
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.35), rgba(255, 105, 180, 0.35));
+            border-color: #ffd700;
+            transform: scale(1.05);
+        }
+
+        .start-sensors-btn.active {
+            background: rgba(76, 175, 80, 0.25);
+            border-color: #76ff03;
+            color: #76ff03;
+            animation: none;
+        }
+
+        .start-sensors-btn.fallback {
+            border-color: rgba(255, 255, 255, 0.4);
+            color: rgba(255, 255, 255, 0.8);
+            animation: none;
         }
 
         /* ── Blow Intensity Meter ─────────────────────── */
@@ -1093,6 +1212,18 @@
             <p class="cake-title">Make a Wish, Riddhi ✨</p>
             <p class="silver-jubilee-badge">✦ Silver Jubilee ✦</p>
 
+            <!-- Interactive Button to trigger Camera + Mic permissions cleanly on mobile -->
+            <button class="start-sensors-btn" id="startSensorsBtn">📷 Tap to Enable Camera & Blow 🌬️</button>
+
+            <!-- Live Selfie Candle Cam (Detects Pout & Face) -->
+            <div class="candle-cam-container" id="candleCamContainer">
+                <div class="candle-cam-bubble" id="candleCamBubble">
+                    <video id="cameraVideo" autoplay playsinline muted></video>
+                    <div class="cam-lens-glow"></div>
+                    <div class="cam-pout-badge" id="camPoutBadge">👄 Pout Here!</div>
+                </div>
+            </div>
+
             <!-- Cake Stage with Homelander on both sides -->
             <div class="cake-stage">
                 <!-- Left Homelander -->
@@ -1461,163 +1592,179 @@
         }
 
         // ══════════════════════════════════════════════════════
-        // ── MIC BLOW DETECTION (with calibration) ───────────
+        // ── DUAL CAMERA POUT & MIC BLOW DETECTION ────────────
         // ══════════════════════════════════════════════════════
         let candlesLit = true;
-        let micStream = null;
+        let mediaStream = null;
         let analyser = null;
-        let micAnimFrame = null;
+        let sensorAnimFrame = null;
         let micAudioCtx = null;
-        const micStatus = document.getElementById('micStatus');
-        const enableMicBtn = document.getElementById('enableMicBtn');
-        const volumeMeter = document.getElementById('volumeMeter');
-        const volumeFill = document.getElementById('volumeFill');
+        let sensorsInitialized = false;
+        let cameraActive = false;
+        let micActive = false;
 
-        // Calibration & Detection state
-        let calibrating = true;
-        let calibrationSamples = [];
-        let calibrationStart = 0;
-        const CALIBRATION_TIME = 1600;    // 1.6s quick calibration
-        let ambientBaseline = 0.02;
-        let blowThreshold = 0.12;
-        const BLOW_SUSTAIN = 350;         // 350ms sustained blow
+        const volumeFill = document.getElementById('volumeFill');
+        const blowMeterVal = document.getElementById('blowMeterVal');
+        const blowMeterHint = document.getElementById('blowMeterHint');
+        const blowMeterWrapper = document.getElementById('blowMeterWrapper');
+        const startSensorsBtn = document.getElementById('startSensorsBtn');
+        const candleCamContainer = document.getElementById('candleCamContainer');
+        const candleCamBubble = document.getElementById('candleCamBubble');
+        const camPoutBadge = document.getElementById('camPoutBadge');
+        const cameraVideo = document.getElementById('cameraVideo');
+
+        // Offscreen canvas for zero-latency 60fps mouth / pout optical analysis
+        const offCanvas = document.createElement('canvas');
+        offCanvas.width = 64;
+        offCanvas.height = 64;
+        const offCtx = offCanvas.getContext('2d', { willReadFrequently: true });
+
+        let prevMouthPixels = null;
+        let lastPoutScore = 0;
         let blowStartTime = 0;
         let isBlowing = false;
-        let micInitialized = false;
-        let micRequesting = false;
 
-        async function initMicrophone() {
-            if (micInitialized || micRequesting || !candlesLit) return;
-            micRequesting = true;
+        // ── Camera Pout Analysis (detects pursing lips / blowing mouth shape)
+        function analyzeCameraPout() {
+            if (!cameraActive || !cameraVideo || cameraVideo.readyState < 2) return 0;
 
             try {
-                const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
-                if (!micAudioCtx && AudioCtxClass) {
-                    micAudioCtx = new AudioCtxClass();
-                }
-                if (micAudioCtx && micAudioCtx.state === 'suspended') {
-                    await micAudioCtx.resume();
-                }
+                offCtx.drawImage(cameraVideo, 0, 0, 64, 64);
+                const frame = offCtx.getImageData(0, 0, 64, 64).data;
 
-                // Check mediaDevices support
-                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                    throw new Error('getUserMedia not supported');
-                }
+                // Center-lower face region where mouth is located (X: 20-44, Y: 36-52)
+                let mouthDelta = 0;
+                let pixelCount = 0;
+                let centerRedIntensity = 0;
+                let outerRedIntensity = 0;
+                let centerDarkness = 0;
 
-                try {
-                    micStream = await navigator.mediaDevices.getUserMedia({
-                        audio: {
-                            echoCancellation: false,
-                            noiseSuppression: false,
-                            autoGainControl: false
+                const currentPixels = [];
+
+                for (let y = 36; y <= 52; y++) {
+                    for (let x = 20; x <= 44; x++) {
+                        const idx = (y * 64 + x) * 4;
+                        const r = frame[idx];
+                        const g = frame[idx + 1];
+                        const b = frame[idx + 2];
+                        const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+
+                        currentPixels.push(brightness);
+
+                        if (prevMouthPixels && prevMouthPixels.length > pixelCount) {
+                            mouthDelta += Math.abs(brightness - prevMouthPixels[pixelCount]);
                         }
-                    });
-                } catch (e1) {
-                    // Fallback to basic audio constraints (often required on iOS Safari)
-                    micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+                        // Lip redness check
+                        const redDiff = r - (g + b) / 2;
+                        const isCenter = (x >= 28 && x <= 36 && y >= 40 && y <= 48);
+
+                        if (isCenter) {
+                            centerRedIntensity += Math.max(0, redDiff);
+                            centerDarkness += (255 - brightness);
+                        } else {
+                            outerRedIntensity += Math.max(0, redDiff);
+                        }
+
+                        pixelCount++;
+                    }
                 }
 
-                micInitialized = true;
-                micRequesting = false;
-                if (enableMicBtn) enableMicBtn.style.display = 'none';
+                prevMouthPixels = currentPixels;
 
-                const source = micAudioCtx.createMediaStreamSource(micStream);
-                analyser = micAudioCtx.createAnalyser();
-                analyser.fftSize = 1024;
-                analyser.smoothingTimeConstant = 0.25;
-                source.connect(analyser);
+                // Motion in mouth area from leaning in or puckering lips
+                const avgDelta = mouthDelta / (pixelCount || 1);
+                const motionScore = Math.min(avgDelta / 7.0, 1.0);
 
-                calibrationStart = Date.now();
-                calibrating = true;
-                calibrationSamples = [];
-                micStatus.textContent = '🎤 Calibrating... stay quiet!';
-                micStatus.className = 'mic-status calibrating';
-                volumeMeter.classList.add('visible');
+                // Pucker/pout concentration in the center of the mouth
+                const centerRatio = centerRedIntensity / (outerRedIntensity + 1);
+                const puckerScore = Math.min(Math.max((centerRatio - 0.25) / 0.75, 0), 1.0);
+                const shadowScore = Math.min(centerDarkness / (pixelCount * 0.4 * 160), 1.0);
 
-                monitorMicBlow();
-            } catch (err) {
-                console.log('Mic denied/failed:', err);
-                micRequesting = false;
-                if (enableMicBtn) {
-                    enableMicBtn.style.display = 'inline-flex';
-                    micStatus.textContent = 'Tap button above to allow mic';
-                } else {
-                    micStatus.textContent = '🎤 Mic not available — use hold button below';
+                // Combined optical score
+                let rawScore = (motionScore * 0.45) + (Math.max(puckerScore, shadowScore) * 0.55);
+                if (motionScore > 0.35 && (puckerScore > 0.2 || shadowScore > 0.3)) {
+                    rawScore += 0.25;
                 }
-                micStatus.className = 'mic-status denied';
+
+                // Smooth score
+                lastPoutScore = (lastPoutScore * 0.35) + (Math.min(Math.max(rawScore, 0), 1) * 0.65);
+                return lastPoutScore;
+            } catch (e) {
+                return 0;
             }
         }
 
-        if (enableMicBtn) {
-            enableMicBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                initMicrophone();
-            });
-            enableMicBtn.addEventListener('touchend', (e) => {
-                e.stopPropagation();
-                initMicrophone();
-            });
-        }
+        // ── Microphone Blow Analysis (tuned for smartphone hardware)
+        function analyzeMicBlow() {
+            if (!analyser || !micActive) return 0;
 
-        // Tap anywhere on the page to initialize mic if browser blocked autoplay
-        document.addEventListener('click', function tryMicOnFirstUserTap() {
-            if (!micInitialized && candlesLit) {
-                initMicrophone();
-            }
-        }, { once: true });
-
-        function monitorMicBlow() {
-            if (!analyser || !candlesLit) return;
-
-            // Frequency domain check (wind turbulence / breath has intense low-frequency energy < 300Hz)
             const freqData = new Uint8Array(analyser.frequencyBinCount);
             analyser.getByteFrequencyData(freqData);
 
-            // Time domain RMS for overall amplitude
-            const bufLen = analyser.fftSize;
-            const timeData = new Float32Array(bufLen);
-            analyser.getFloatTimeDomainData(timeData);
+            // Wind turbulence / breath air causes huge spike in low bins (bins 0 to 6)
+            let lowSum = 0;
+            const numBins = Math.min(6, freqData.length);
+            for (let i = 0; i < numBins; i++) {
+                lowSum += freqData[i];
+            }
+            const lowAvg = lowSum / numBins; // 0 - 255
 
+            // RMS volume
+            const timeData = new Float32Array(analyser.fftSize);
+            analyser.getFloatTimeDomainData(timeData);
             let sumSq = 0;
-            for (let i = 0; i < bufLen; i++) {
+            for (let i = 0; i < timeData.length; i++) {
                 sumSq += timeData[i] * timeData[i];
             }
-            const rms = Math.sqrt(sumSq / bufLen);
+            const rms = Math.sqrt(sumSq / timeData.length);
 
-            // Low frequency breath energy (first 8 frequency bins: 0 to ~350Hz)
-            let lowFreqSum = 0;
-            const lowBins = Math.min(8, freqData.length);
-            for (let i = 0; i < lowBins; i++) {
-                lowFreqSum += freqData[i];
-            }
-            const lowFreqAvg = lowFreqSum / lowBins; // 0 - 255
+            // Smartphone sensitivity thresholds:
+            // Resting air is lowAvg ~10-15. Direct blow is 35-180.
+            const lowScore = Math.min(Math.max((lowAvg - 18) / 32, 0), 1.0);
+            const rmsScore = Math.min(Math.max((rms - 0.012) / 0.035, 0), 1.0);
 
-            // Combined blowing score: sensitive to both breath wind rumble and volume
-            const blowScore = Math.max(rms, (lowFreqAvg / 255) * 0.35);
+            return Math.max(lowScore, rmsScore);
+        }
 
-            // ---- Calibration in background ----
-            if (calibrating) {
-                calibrationSamples.push(blowScore);
-                const elapsed = Date.now() - calibrationStart;
-                if (elapsed >= CALIBRATION_TIME) {
-                    const mean = calibrationSamples.reduce((a, b) => a + b, 0) / calibrationSamples.length;
-                    ambientBaseline = mean;
-                    blowThreshold = Math.min(Math.max(mean + 0.05, 0.08), 0.20);
-                    calibrating = false;
-                    console.log(`Calibrated baseline=${mean.toFixed(4)}, threshold=${blowThreshold.toFixed(4)}`);
+        // ── Unified Sensor Processing Loop
+        function runSensors() {
+            if (!candlesLit) return;
+
+            const micScore = analyzeMicBlow();
+            const poutScore = analyzeCameraPout();
+
+            let combinedScore = 0;
+
+            if (cameraActive && micActive) {
+                // When user pouts AND gives air to mic: rapid instant trigger!
+                if (poutScore > 0.25 && micScore > 0.2) {
+                    combinedScore = Math.min(1.0, (poutScore + micScore) * 0.95 + 0.2);
+                } else {
+                    combinedScore = Math.max(micScore * 1.3, poutScore * 1.25);
                 }
+            } else if (cameraActive) {
+                combinedScore = poutScore * 1.35;
+            } else if (micActive) {
+                combinedScore = micScore * 1.4;
             }
 
-            // ---- Live Blow Intensity Meter (0% to 100%) ----
-            const meterPct = Math.min(Math.round((blowScore / blowThreshold) * 100), 100);
-            const blowMeterVal = document.getElementById('blowMeterVal');
-            const blowMeterHint = document.getElementById('blowMeterHint');
-            const blowMeterWrapper = document.getElementById('blowMeterWrapper');
+            const meterPct = Math.min(100, Math.round(combinedScore * 100));
 
-            volumeFill.style.width = meterPct + '%';
+            if (volumeFill) volumeFill.style.width = meterPct + '%';
             if (blowMeterVal) blowMeterVal.textContent = meterPct + '%';
 
-            if (blowScore > blowThreshold) {
+            // Pout visual feedback on selfie camera
+            if (poutScore > 0.3) {
+                if (camPoutBadge) camPoutBadge.textContent = '✨ Pout Detected! 🌬️';
+                if (candleCamBubble) candleCamBubble.classList.add('pouting');
+            } else {
+                if (camPoutBadge) camPoutBadge.textContent = '👄 Pout Here!';
+                if (candleCamBubble) candleCamBubble.classList.remove('pouting');
+            }
+
+            // High blow threshold (extinguish trigger)
+            if (combinedScore > 0.65) {
                 if (blowMeterWrapper) blowMeterWrapper.classList.add('blowing');
                 if (blowMeterHint) blowMeterHint.textContent = '🌬️ Blowing hard! Keep going!';
 
@@ -1627,12 +1774,10 @@
                 }
 
                 const blowDuration = Date.now() - blowStartTime;
-                const blowRatio = Math.min(blowDuration / BLOW_SUSTAIN, 1);
-
-                // Dynamically flicker flames as the user blows!
+                const blowRatio = Math.min(blowDuration / 280, 1);
                 updateFlamesDuringBlow(blowRatio);
 
-                if (blowDuration >= BLOW_SUSTAIN) {
+                if (blowDuration >= 280) {
                     extinguishCandles();
                     return;
                 }
@@ -1646,19 +1791,112 @@
                             flame.style.opacity = '';
                         }
                     });
-                    document.getElementById('candleGlow').style.opacity = '';
+                    const glow = document.getElementById('candleGlow');
+                    if (glow) glow.style.opacity = '';
                 }
                 if (blowMeterWrapper) blowMeterWrapper.classList.remove('blowing');
                 if (blowMeterHint) {
-                    blowMeterHint.textContent = meterPct > 30 ? 'Blow harder to pass the line! 💨' : 'Huff & puff to fill the meter! 💨';
+                    blowMeterHint.textContent = meterPct > 25 ? 'Blow harder to pass the line! 💨' : 'Pout at camera & blow into mic! 💨';
                 }
             }
 
-            micAnimFrame = requestAnimationFrame(monitorMicBlow);
+            sensorAnimFrame = requestAnimationFrame(runSensors);
         }
 
-        // Start mic after page loads
-        setTimeout(initMicrophone, 500);
+        // ── Direct User Gesture Initialization (Mobile Compliant)
+        async function initSensors() {
+            if (sensorsInitialized || !candlesLit) return;
+            sensorsInitialized = true;
+
+            if (startSensorsBtn) {
+                startSensorsBtn.textContent = '⏳ Starting Camera & Mic...';
+            }
+
+            try {
+                // Initialize AudioContext directly inside user interaction
+                const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
+                if (!micAudioCtx && AudioCtxClass) {
+                    micAudioCtx = new AudioCtxClass();
+                }
+                if (micAudioCtx && micAudioCtx.state === 'suspended') {
+                    await micAudioCtx.resume();
+                }
+
+                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                    throw new Error('getUserMedia not supported');
+                }
+
+                // Request user camera and microphone together
+                try {
+                    mediaStream = await navigator.mediaDevices.getUserMedia({
+                        audio: {
+                            echoCancellation: false,
+                            noiseSuppression: false,
+                            autoGainControl: true
+                        },
+                        video: {
+                            facingMode: 'user',
+                            width: { ideal: 320, max: 480 },
+                            height: { ideal: 240, max: 360 }
+                        }
+                    });
+                    cameraActive = true;
+                    micActive = true;
+                } catch (camErr) {
+                    console.log('Camera rejected or unavailable, falling back to audio only:', camErr);
+                    mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    micActive = true;
+                    cameraActive = false;
+                }
+
+                // Start camera video element
+                if (cameraActive && cameraVideo) {
+                    cameraVideo.srcObject = mediaStream;
+                    cameraVideo.play().catch(e => console.log('Camera video play error:', e));
+                    if (candleCamContainer) candleCamContainer.style.display = 'flex';
+                }
+
+                // Setup Audio Analyser
+                if (micActive && micAudioCtx) {
+                    const source = micAudioCtx.createMediaStreamSource(mediaStream);
+                    analyser = micAudioCtx.createAnalyser();
+                    analyser.fftSize = 512;
+                    analyser.smoothingTimeConstant = 0.25;
+                    source.connect(analyser);
+                }
+
+                if (startSensorsBtn) {
+                    startSensorsBtn.innerHTML = cameraActive ? '📷 Cam & 🎤 Mic Active: Pout & Blow! 🌬️' : '🎤 Mic Active: Blow into your mic! 🌬️';
+                    startSensorsBtn.classList.add('active');
+                    setTimeout(() => {
+                        startSensorsBtn.style.opacity = '0';
+                        setTimeout(() => startSensorsBtn.style.display = 'none', 500);
+                    }, 3500);
+                }
+
+                runSensors();
+
+            } catch (err) {
+                console.log('Sensors denied or error:', err);
+                if (startSensorsBtn) {
+                    startSensorsBtn.textContent = '💨 Hold the button below to blow!';
+                    startSensorsBtn.classList.add('fallback');
+                }
+            }
+        }
+
+        // Tap/click button or anywhere on screen starts camera & mic seamlessly
+        if (startSensorsBtn) {
+            startSensorsBtn.addEventListener('click', initSensors);
+            startSensorsBtn.addEventListener('touchend', initSensors);
+        }
+
+        document.addEventListener('click', function pageTapSensors() {
+            if (!sensorsInitialized && candlesLit) initSensors();
+        }, { once: true });
+        document.addEventListener('touchstart', function pageTouchSensors() {
+            if (!sensorsInitialized && candlesLit) initSensors();
+        }, { passive: true, once: true });
 
         // ══════════════════════════════════════════════════════
         // ── HOLD-TO-BLOW (Fallback) ──────────────────────────
@@ -1899,7 +2137,7 @@
             // Fade candle glow
             document.getElementById('candleGlow').classList.add('off');
 
-            // Hide blow button, intensity meter, and hints
+            // Hide blow button, intensity meter, camera bubble, and hints
             document.querySelector('.blow-btn-container').style.display = 'none';
             const blowWrap = document.getElementById('blowMeterWrapper');
             if (blowWrap) blowWrap.style.display = 'none';
@@ -1907,16 +2145,21 @@
             if (micSec) micSec.style.display = 'none';
             const swipeHint = document.querySelector('.swipe-hint');
             if (swipeHint) swipeHint.style.display = 'none';
+            const camBubble = document.getElementById('candleCamContainer');
+            if (camBubble) camBubble.style.display = 'none';
+            const sBtn = document.getElementById('startSensorsBtn');
+            if (sBtn) sBtn.style.display = 'none';
+
             document.querySelector('.blow-instruction').textContent = '✨ Candles blown out! ✨';
 
-            // Clean up microphone
-            if (micStream) {
-                micStream.getTracks().forEach(track => track.stop());
-                micStream = null;
+            // Clean up camera & microphone streams
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => track.stop());
+                mediaStream = null;
             }
-            if (micAnimFrame) {
-                cancelAnimationFrame(micAnimFrame);
-                micAnimFrame = null;
+            if (sensorAnimFrame) {
+                cancelAnimationFrame(sensorAnimFrame);
+                sensorAnimFrame = null;
             }
             if (micAudioCtx && micAudioCtx.state !== 'closed') {
                 try { micAudioCtx.close(); } catch (e) {}
