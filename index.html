@@ -1,0 +1,1255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Happy Birthday Riddhi! 🎂✨</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700;800&family=Great+Vibes&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            transition: background 1.5s ease;
+            touch-action: manipulation;
+        }
+
+        /* ── Scene 1: Cake & Candles ──────────────────── */
+        body.scene-cake {
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 40%, #0d1b3e 100%);
+        }
+
+        /* ── Scene 2: Celebration ─────────────────────── */
+        body.scene-celebration {
+            background: linear-gradient(135deg, #1a0533 0%, #2d0a4e 30%, #0a1628 60%, #1a0533 100%);
+        }
+
+        /* ── Floating sparkles background ─────────────── */
+        .floating-sparkles {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .sparkle {
+            position: absolute;
+            font-size: 1rem;
+            opacity: 0.2;
+            animation: floatSparkle linear infinite;
+        }
+
+        @keyframes floatSparkle {
+            0% { transform: translateY(100vh) rotate(0deg) scale(0.5); opacity: 0; }
+            10% { opacity: 0.2; }
+            90% { opacity: 0.2; }
+            100% { transform: translateY(-10vh) rotate(360deg) scale(1.2); opacity: 0; }
+        }
+
+        /* ── Container ────────────────────────────────── */
+        .container {
+            text-align: center;
+            position: relative;
+            width: 100%;
+            max-width: 650px;
+            padding: 20px;
+            z-index: 10;
+        }
+
+        /* ── SCENE 1: CAKE PAGE ───────────────────────── */
+        #cakePage {
+            animation: fadeSlideIn 1s ease;
+        }
+
+        #celebrationPage {
+            display: none;
+            animation: fadeSlideIn 1s ease;
+        }
+
+        @keyframes fadeSlideIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── Cake Scene Title ─────────────────────────── */
+        .cake-title {
+            font-family: 'Great Vibes', cursive;
+            color: #c0c0c0;
+            font-size: 2.8rem;
+            margin-bottom: 6px;
+            text-shadow: 0 0 20px rgba(192, 192, 192, 0.4), 0 0 40px rgba(192, 192, 192, 0.1);
+            animation: silverGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes silverGlow {
+            0%, 100% { text-shadow: 0 0 20px rgba(192, 192, 192, 0.3), 0 0 40px rgba(192, 192, 192, 0.1); }
+            50% { text-shadow: 0 0 40px rgba(192, 192, 192, 0.6), 0 0 80px rgba(192, 192, 192, 0.3), 0 0 120px rgba(255, 215, 0, 0.15); }
+        }
+
+        .silver-jubilee-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #c0c0c0, #e8e8e8, #a0a0a0, #c0c0c0);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            margin-bottom: 25px;
+            animation: shimmerBadge 3s linear infinite;
+        }
+
+        @keyframes shimmerBadge {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 300% 50%; }
+        }
+
+        /* ── CAKE ─────────────────────────────────────── */
+        .cake-container {
+            position: relative;
+            width: 280px;
+            height: 300px;
+            margin: 0 auto 30px;
+        }
+
+        /* Cake base layers */
+        .cake-layer {
+            position: absolute;
+            border-radius: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .cake-layer-bottom {
+            bottom: 0;
+            width: 260px;
+            height: 100px;
+            background: linear-gradient(180deg, #e8a0c0, #d4789a);
+            border-radius: 15px 15px 20px 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3), inset 0 -5px 15px rgba(0,0,0,0.1);
+        }
+
+        .cake-layer-bottom::before {
+            content: '';
+            position: absolute;
+            top: -12px; left: -5px; right: -5px;
+            height: 25px;
+            background: linear-gradient(180deg, #fff5f9, #f5c6d8);
+            border-radius: 10px 10px 50% 50%;
+        }
+
+        .cake-layer-middle {
+            bottom: 95px;
+            width: 210px;
+            height: 85px;
+            background: linear-gradient(180deg, #f0b8d0, #e090b0);
+            border-radius: 12px 12px 15px 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2), inset 0 -5px 12px rgba(0,0,0,0.1);
+        }
+
+        .cake-layer-middle::before {
+            content: '';
+            position: absolute;
+            top: -10px; left: -5px; right: -5px;
+            height: 22px;
+            background: linear-gradient(180deg, #c0c0c0, #a8a8a8);
+            border-radius: 10px 10px 50% 50%;
+        }
+
+        .cake-layer-top {
+            bottom: 175px;
+            width: 160px;
+            height: 70px;
+            background: linear-gradient(180deg, #f5c8dd, #e8a0c0);
+            border-radius: 10px 10px 12px 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2), inset 0 -5px 10px rgba(0,0,0,0.1);
+        }
+
+        .cake-layer-top::before {
+            content: '';
+            position: absolute;
+            top: -10px; left: -5px; right: -5px;
+            height: 22px;
+            background: linear-gradient(180deg, #fff, #e0e0e0);
+            border-radius: 10px 10px 50% 50%;
+        }
+
+        /* Silver decorations on cake */
+        .cake-decor {
+            position: absolute;
+            font-size: 0.7rem;
+            color: #c0c0c0;
+            text-shadow: 0 0 5px rgba(192,192,192,0.5);
+        }
+
+        /* ── CANDLES ──────────────────────────────────── */
+        .candles-row {
+            position: absolute;
+            bottom: 240px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 18px;
+            z-index: 5;
+        }
+
+        .candle {
+            position: relative;
+            width: 12px;
+            height: 55px;
+            border-radius: 3px 3px 0 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .candle:nth-child(1) {
+            background: linear-gradient(180deg, #c0c0c0, #909090);
+        }
+        .candle:nth-child(2) {
+            background: linear-gradient(180deg, #ffd700, #cc9900);
+        }
+        .candle:nth-child(3) {
+            background: linear-gradient(180deg, #c0c0c0, #909090);
+        }
+        .candle:nth-child(4) {
+            background: linear-gradient(180deg, #ffd700, #cc9900);
+        }
+        .candle:nth-child(5) {
+            background: linear-gradient(180deg, #c0c0c0, #909090);
+        }
+
+        /* Candle wick */
+        .candle::before {
+            content: '';
+            position: absolute;
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 8px;
+            background: #333;
+            border-radius: 1px;
+        }
+
+        /* ── FLAME ────────────────────────────────────── */
+        .flame-wrapper {
+            position: absolute;
+            top: -35px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 30px;
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .flame-wrapper.extinguished {
+            opacity: 0;
+            transform: translateX(-50%) scale(0) translateY(10px);
+        }
+
+        .flame {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 14px;
+            height: 22px;
+            background: radial-gradient(ellipse at bottom, #ffd700, #ff8c00 40%, #ff4500 70%, transparent 100%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            animation: flicker 0.3s ease-in-out infinite alternate;
+            box-shadow: 0 0 15px 5px rgba(255, 165, 0, 0.4), 0 0 30px 10px rgba(255, 165, 0, 0.15);
+        }
+
+        .flame-inner {
+            position: absolute;
+            bottom: 2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 12px;
+            background: radial-gradient(ellipse at bottom, #fff, #ffe066 50%, transparent 100%);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            animation: flickerInner 0.25s ease-in-out infinite alternate;
+        }
+
+        @keyframes flicker {
+            0% { transform: translateX(-50%) scaleY(1) scaleX(1) rotate(-2deg); }
+            25% { transform: translateX(-50%) scaleY(1.05) scaleX(0.95) rotate(1deg); }
+            50% { transform: translateX(-50%) scaleY(0.95) scaleX(1.05) rotate(-1deg); }
+            75% { transform: translateX(-50%) scaleY(1.02) scaleX(0.98) rotate(2deg); }
+            100% { transform: translateX(-50%) scaleY(1) scaleX(1) rotate(-1deg); }
+        }
+
+        @keyframes flickerInner {
+            0% { transform: translateX(-50%) scaleY(1); }
+            100% { transform: translateX(-50%) scaleY(0.9); }
+        }
+
+        /* ── Ambient glow from candles ────────────────── */
+        .candle-glow {
+            position: absolute;
+            bottom: 200px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 300px;
+            height: 200px;
+            background: radial-gradient(ellipse, rgba(255, 165, 0, 0.12), transparent 70%);
+            pointer-events: none;
+            transition: opacity 1s ease;
+        }
+
+        .candle-glow.off {
+            opacity: 0;
+        }
+
+        /* ── Number 25 on cake ────────────────────────── */
+        .cake-number {
+            position: absolute;
+            bottom: 115px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 2.2rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #c0c0c0, #fff, #c0c0c0, #e8e8e8);
+            background-size: 300% 300%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmerBadge 2s linear infinite;
+            text-shadow: none;
+            z-index: 3;
+        }
+
+        /* ── Instructions ─────────────────────────────── */
+        .blow-instruction {
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 1.2rem;
+            font-weight: 300;
+            margin-bottom: 8px;
+            animation: pulseText 2s ease-in-out infinite;
+        }
+
+        @keyframes pulseText {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .blow-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            animation: breathe 2s ease-in-out infinite;
+        }
+
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
+        /* ── Mic status ───────────────────────────────── */
+        .mic-status {
+            font-size: 0.75rem;
+            color: rgba(255, 255, 255, 0.3);
+            margin-top: 5px;
+            min-height: 18px;
+        }
+
+        .mic-status.active {
+            color: rgba(100, 255, 100, 0.6);
+        }
+
+        .mic-status.denied {
+            color: rgba(255, 100, 100, 0.5);
+        }
+
+        /* ── Hold-to-Blow button ──────────────────────── */
+        .blow-btn-container {
+            margin-top: 15px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .blow-btn {
+            position: relative;
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            border: 3px solid rgba(192, 192, 192, 0.3);
+            background: radial-gradient(circle, rgba(255, 165, 0, 0.15), rgba(255, 69, 0, 0.05));
+            color: rgba(255, 255, 255, 0.8);
+            font-family: 'Outfit', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+        }
+
+        .blow-btn:hover {
+            border-color: rgba(255, 165, 0, 0.5);
+            background: radial-gradient(circle, rgba(255, 165, 0, 0.25), rgba(255, 69, 0, 0.1));
+            transform: scale(1.05);
+        }
+
+        .blow-btn:active, .blow-btn.blowing {
+            border-color: rgba(255, 69, 0, 0.7);
+            background: radial-gradient(circle, rgba(255, 165, 0, 0.35), rgba(255, 69, 0, 0.15));
+            transform: scale(0.97);
+        }
+
+        .blow-btn .blow-emoji {
+            font-size: 2.5rem;
+            line-height: 1;
+        }
+
+        .blow-btn .blow-text {
+            font-size: 0.75rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            opacity: 0.7;
+        }
+
+        /* Circular progress ring around blow button */
+        .blow-progress-ring {
+            position: absolute;
+            top: -5px; left: -5px;
+            width: 150px;
+            height: 150px;
+            transform: rotate(-90deg);
+            pointer-events: none;
+        }
+
+        .blow-progress-ring circle {
+            fill: none;
+            stroke: #ff6a00;
+            stroke-width: 4;
+            stroke-dasharray: 440;
+            stroke-dashoffset: 440;
+            stroke-linecap: round;
+            transition: stroke-dashoffset 0.05s linear;
+            filter: drop-shadow(0 0 6px rgba(255, 106, 0, 0.5));
+        }
+
+        /* Swipe / shake hint */
+        .swipe-hint {
+            color: rgba(255, 255, 255, 0.25);
+            font-size: 0.75rem;
+            margin-top: 10px;
+            font-style: italic;
+        }
+
+        /* ── Smoke puff ───────────────────────────────── */
+        .smoke {
+            position: fixed;
+            width: 30px;
+            height: 30px;
+            background: radial-gradient(circle, rgba(200, 200, 200, 0.5), transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 100;
+            animation: smokeRise 1.5s ease-out forwards;
+        }
+
+        @keyframes smokeRise {
+            0% { opacity: 0.6; transform: scale(0.5) translateY(0); }
+            50% { opacity: 0.3; transform: scale(1.5) translateY(-40px); }
+            100% { opacity: 0; transform: scale(2.5) translateY(-100px); }
+        }
+
+        /* ══════════════════════════════════════════════ */
+        /* ── SCENE 2: CELEBRATION PAGE ─────────────── */
+        /* ══════════════════════════════════════════════ */
+
+        .celebration-title {
+            font-family: 'Great Vibes', cursive;
+            font-size: 4rem;
+            color: #fff;
+            text-shadow: 0 0 30px rgba(255, 215, 0, 0.5), 0 0 60px rgba(192, 192, 192, 0.3);
+            margin-bottom: 5px;
+            animation: celebGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes celebGlow {
+            from { text-shadow: 0 0 20px rgba(255, 215, 0, 0.4), 0 0 40px rgba(192, 192, 192, 0.2); }
+            to { text-shadow: 0 0 40px rgba(255, 215, 0, 0.8), 0 0 80px rgba(192, 192, 192, 0.4), 0 0 120px rgba(255, 215, 0, 0.2); }
+        }
+
+        .celebration-name {
+            font-family: 'Outfit', sans-serif;
+            font-size: 5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #c0c0c0, #ffd700, #fff, #c0c0c0, #ffd700);
+            background-size: 400% 400%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmerName 3s linear infinite;
+            margin-bottom: 8px;
+            line-height: 1.1;
+        }
+
+        @keyframes shimmerName {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 400% 50%; }
+        }
+
+        .celebration-age {
+            display: inline-block;
+            font-size: 6rem;
+            font-weight: 800;
+            background: linear-gradient(180deg, #ffd700, #c0c0c0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: none;
+            animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            margin-bottom: 5px;
+        }
+
+        @keyframes bounceIn {
+            0% { transform: scale(0); opacity: 0; }
+            60% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); }
+        }
+
+        .silver-jubilee-text {
+            font-size: 1.5rem;
+            font-weight: 700;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            background: linear-gradient(90deg, #c0c0c0, #fff, #ffd700, #fff, #c0c0c0);
+            background-size: 300% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmerText 2.5s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes shimmerText {
+            to { background-position: 300% center; }
+        }
+
+        .celebration-message {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.15rem;
+            line-height: 1.7;
+            max-width: 500px;
+            margin: 0 auto 20px;
+            font-weight: 300;
+        }
+
+        .celebration-message strong {
+            color: #ffd700;
+            font-weight: 600;
+        }
+
+        .meme-img {
+            width: 320px;
+            max-width: 90%;
+            border-radius: 20px;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
+            margin: 20px auto;
+            display: block;
+            animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+
+        .crown-emoji {
+            font-size: 4rem;
+            animation: crownBounce 1s ease-in-out infinite alternate;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        @keyframes crownBounce {
+            from { transform: translateY(0) rotate(-5deg); }
+            to { transform: translateY(-8px) rotate(5deg); }
+        }
+
+        .footer-note {
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 0.8rem;
+            font-style: italic;
+            margin-top: 15px;
+        }
+
+        /* ── Confetti ─────────────────────────────────── */
+        .confetti {
+            position: fixed;
+            z-index: 9999;
+            pointer-events: none;
+            animation: confetti-fall linear forwards;
+        }
+
+        @keyframes confetti-fall {
+            0% { opacity: 1; }
+            100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+        }
+
+        /* ── Firework bursts ──────────────────────────── */
+        .firework {
+            position: fixed;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            animation: fireworkBurst 1.2s ease-out forwards;
+        }
+
+        @keyframes fireworkBurst {
+            0% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0.3); }
+        }
+
+        /* ── Silver ring burst on transition ──────────── */
+        .silver-ring {
+            position: fixed;
+            border-radius: 50%;
+            border: 3px solid #c0c0c0;
+            animation: ringExpand 1s ease-out forwards;
+            pointer-events: none;
+            z-index: 100;
+        }
+
+        @keyframes ringExpand {
+            0% { width: 0; height: 0; opacity: 1; }
+            100% { width: 400px; height: 400px; opacity: 0; margin-top: -200px; margin-left: -200px; }
+        }
+
+        /* ── Volume meter bar ─────────────────────────── */
+        .volume-meter {
+            width: 120px;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 3px;
+            margin: 8px auto 0;
+            overflow: hidden;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .volume-meter.visible {
+            opacity: 1;
+        }
+
+        .volume-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #4caf50, #ffd700, #ff4500);
+            border-radius: 3px;
+            transition: width 0.05s ease;
+        }
+
+        /* ── Responsive ───────────────────────────────── */
+        @media (max-width: 768px) {
+            .cake-title { font-size: 2.2rem; }
+            .celebration-title { font-size: 2.8rem; }
+            .celebration-name { font-size: 3.5rem; }
+            .celebration-age { font-size: 4.5rem; }
+            .silver-jubilee-text { font-size: 1.1rem; letter-spacing: 5px; }
+            .cake-container { transform: scale(0.85); margin-bottom: 15px; }
+        }
+
+        @media (max-width: 400px) {
+            .cake-title { font-size: 1.8rem; }
+            .celebration-title { font-size: 2.2rem; }
+            .celebration-name { font-size: 2.8rem; }
+            .celebration-age { font-size: 3.5rem; }
+            .silver-jubilee-text { font-size: 0.9rem; letter-spacing: 3px; }
+            .cake-container { transform: scale(0.7); }
+        }
+    </style>
+</head>
+<body class="scene-cake">
+
+    <!-- Floating sparkles background -->
+    <div class="floating-sparkles" id="floatingSparkles"></div>
+
+    <div class="container">
+
+        <!-- ══════ SCENE 1: CAKE WITH CANDLES ══════ -->
+        <div id="cakePage">
+            <p class="cake-title">Make a Wish, Riddhi ✨</p>
+            <p class="silver-jubilee-badge">✦ Silver Jubilee ✦</p>
+
+            <!-- Cake -->
+            <div class="cake-container" id="cakeContainer">
+                <!-- Ambient glow from candles -->
+                <div class="candle-glow" id="candleGlow"></div>
+
+                <!-- Candles with flames -->
+                <div class="candles-row" id="candlesRow">
+                    <div class="candle">
+                        <div class="flame-wrapper" id="flame1">
+                            <div class="flame"></div>
+                            <div class="flame-inner"></div>
+                        </div>
+                    </div>
+                    <div class="candle">
+                        <div class="flame-wrapper" id="flame2">
+                            <div class="flame"></div>
+                            <div class="flame-inner"></div>
+                        </div>
+                    </div>
+                    <div class="candle" style="height: 65px;">
+                        <div class="flame-wrapper" id="flame3">
+                            <div class="flame"></div>
+                            <div class="flame-inner"></div>
+                        </div>
+                    </div>
+                    <div class="candle">
+                        <div class="flame-wrapper" id="flame4">
+                            <div class="flame"></div>
+                            <div class="flame-inner"></div>
+                        </div>
+                    </div>
+                    <div class="candle">
+                        <div class="flame-wrapper" id="flame5">
+                            <div class="flame"></div>
+                            <div class="flame-inner"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cake number -->
+                <div class="cake-number">25</div>
+
+                <!-- Cake layers -->
+                <div class="cake-layer cake-layer-top"></div>
+                <div class="cake-layer cake-layer-middle"></div>
+                <div class="cake-layer cake-layer-bottom"></div>
+            </div>
+
+            <!-- Hold to blow -->
+            <p class="blow-instruction">Press & hold to blow out the candles! 🌬️</p>
+
+            <div class="blow-btn-container">
+                <button class="blow-btn" id="blowBtn">
+                    <span class="blow-emoji">🌬️</span>
+                    <span class="blow-text">Hold to Blow</span>
+                </button>
+                <svg class="blow-progress-ring" viewBox="0 0 150 150">
+                    <circle id="progressCircle" cx="75" cy="75" r="70"></circle>
+                </svg>
+            </div>
+            <p class="swipe-hint">on mobile: shake your phone or swipe up ↑</p>
+        </div>
+
+        <!-- ══════ SCENE 2: CELEBRATION ══════ -->
+        <div id="celebrationPage">
+            <span class="crown-emoji">👑</span>
+            <p class="celebration-title">Happy Birthday</p>
+            <h1 class="celebration-name">RIDDHI!</h1>
+            <div class="celebration-age">25</div>
+            <p class="silver-jubilee-text">✦ Silver Jubilee ✦</p>
+
+            <p class="celebration-message">
+                A quarter century of being <strong>absolutely amazing!</strong> 🥂<br>
+                Here's to 25 years of brilliance, laughter, and everything wonderful that makes you, <strong>YOU</strong>.<br><br>
+                May this milestone year bring you <strong>silver linings</strong> in every cloud, <strong>golden moments</strong> in every day, and <strong>diamond memories</strong> that last forever! 💎✨
+            </p>
+
+            <img src="hbdrr.jpg" alt="Oh Guurl Happy Birthday" class="meme-img">
+
+            <p class="celebration-message" style="font-size: 1.4rem; color: #ffd700;">
+                🥳 Cheers to 25 more incredible years! 🥳
+            </p>
+
+            <p class="footer-note">
+                (the candles may be out, but you still shine the brightest 🌟)
+            </p>
+        </div>
+
+    </div>
+
+    <script>
+        // ══════════════════════════════════════════════════════
+        // ── FLOATING SPARKLES ────────────────────────────────
+        // ══════════════════════════════════════════════════════
+        const sparklesContainer = document.getElementById('floatingSparkles');
+        const sparkleEmojis = ['✨', '⭐', '🌟', '💫', '✦', '⋆'];
+
+        function createSparkle() {
+            const sparkle = document.createElement('span');
+            sparkle.className = 'sparkle';
+            sparkle.textContent = sparkleEmojis[Math.floor(Math.random() * sparkleEmojis.length)];
+            sparkle.style.left = Math.random() * 100 + '%';
+            sparkle.style.fontSize = (Math.random() * 1 + 0.6) + 'rem';
+            sparkle.style.animationDuration = (Math.random() * 8 + 6) + 's';
+            sparkle.style.animationDelay = (Math.random() * 2) + 's';
+            sparklesContainer.appendChild(sparkle);
+            setTimeout(() => sparkle.remove(), 16000);
+        }
+
+        setInterval(createSparkle, 700);
+        for (let i = 0; i < 10; i++) setTimeout(createSparkle, i * 200);
+
+        // ══════════════════════════════════════════════════════
+        // ── SOUND EFFECTS (Web Audio API) ────────────────────
+        // ══════════════════════════════════════════════════════
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+
+        function getAudioCtx() {
+            if (!audioCtx) audioCtx = new AudioCtx();
+            return audioCtx;
+        }
+
+        // Candle extinguish whoosh
+        function playWhooshSound() {
+            const ctx = getAudioCtx();
+            const now = ctx.currentTime;
+
+            // White noise whoosh
+            const bufferSize = ctx.sampleRate * 0.6;
+            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1);
+
+            const noise = ctx.createBufferSource();
+            noise.buffer = buffer;
+
+            const filter = ctx.createBiquadFilter();
+            filter.type = 'bandpass';
+            filter.frequency.setValueAtTime(2000, now);
+            filter.frequency.exponentialRampToValueAtTime(200, now + 0.5);
+            filter.Q.value = 0.5;
+
+            const gain = ctx.createGain();
+            gain.gain.setValueAtTime(0.3, now);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+
+            noise.connect(filter);
+            filter.connect(gain);
+            gain.connect(ctx.destination);
+            noise.start(now);
+            noise.stop(now + 0.6);
+        }
+
+        // Celebration fanfare
+        function playCelebrationSound() {
+            const ctx = getAudioCtx();
+            const now = ctx.currentTime;
+
+            // Ascending major chord fanfare
+            const notes = [
+                { freq: 523, time: 0 },     // C5
+                { freq: 659, time: 0.1 },   // E5
+                { freq: 784, time: 0.2 },   // G5
+                { freq: 1047, time: 0.35 },  // C6
+                { freq: 1319, time: 0.5 },   // E6
+            ];
+
+            notes.forEach(({ freq, time }) => {
+                const osc = ctx.createOscillator();
+                osc.type = 'sine';
+                osc.frequency.value = freq;
+
+                const gain = ctx.createGain();
+                const start = now + time;
+                gain.gain.setValueAtTime(0, start);
+                gain.gain.linearRampToValueAtTime(0.25, start + 0.05);
+                gain.gain.exponentialRampToValueAtTime(0.01, start + 0.5);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(start);
+                osc.stop(start + 0.55);
+            });
+
+            // Sparkle shimmer
+            setTimeout(() => {
+                for (let i = 0; i < 8; i++) {
+                    const osc = ctx.createOscillator();
+                    osc.type = 'sine';
+                    osc.frequency.value = 2000 + Math.random() * 3000;
+                    const gain = ctx.createGain();
+                    const t = ctx.currentTime + i * 0.05;
+                    gain.gain.setValueAtTime(0.06, t);
+                    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.2);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(t);
+                    osc.stop(t + 0.25);
+                }
+            }, 600);
+        }
+
+        // ══════════════════════════════════════════════════════
+        // ── HOLD-TO-BLOW DETECTION ────────────────────────────
+        // ══════════════════════════════════════════════════════
+        let candlesLit = true;
+        const blowBtn = document.getElementById('blowBtn');
+        const progressCircle = document.getElementById('progressCircle');
+        const CIRCUMFERENCE = 2 * Math.PI * 70; // radius=70 from SVG
+        progressCircle.style.strokeDasharray = CIRCUMFERENCE;
+        progressCircle.style.strokeDashoffset = CIRCUMFERENCE;
+
+        const BLOW_HOLD_TIME = 1800;  // 1.8 seconds to fully blow out
+        let holdStartTime = 0;
+        let holdInterval = null;
+        let isHolding = false;
+        let blowProgress = 0;         // 0 to 1
+
+        // ── Progressive flame effects during hold ────────────
+        function updateFlamesDuringBlow(progress) {
+            const flames = document.querySelectorAll('.flame-wrapper');
+            const flameOrder = [2, 0, 4, 1, 3]; // center first, then outward
+
+            flameOrder.forEach((idx, i) => {
+                const flame = flames[idx];
+                if (!flame) return;
+
+                // Each flame starts shrinking at a staggered point
+                const flameStart = i * 0.15; // 0, 0.15, 0.30, 0.45, 0.60
+                const flameEnd = flameStart + 0.35;
+                const flameProgress = Math.max(0, Math.min(1, (progress - flameStart) / (flameEnd - flameStart)));
+
+                if (flameProgress >= 1) {
+                    // This flame is out
+                    flame.classList.add('extinguished');
+                    if (!flame.dataset.smoked) {
+                        flame.dataset.smoked = 'true';
+                        spawnSmoke(flame);
+                        playWhooshSound();
+                    }
+                } else if (flameProgress > 0) {
+                    // Flame is flickering/shrinking
+                    const scale = 1 - flameProgress * 0.8;
+                    const wobble = Math.sin(Date.now() * 0.02) * flameProgress * 15;
+                    flame.style.transform = `translateX(-50%) scale(${scale}) rotate(${wobble}deg)`;
+                    flame.style.opacity = 1 - flameProgress * 0.5;
+                }
+            });
+
+            // Candle glow fades
+            const glow = document.getElementById('candleGlow');
+            glow.style.opacity = 1 - progress;
+        }
+
+        // ── Hold start ───────────────────────────────────────
+        function startBlow() {
+            if (!candlesLit || isHolding) return;
+            isHolding = true;
+            holdStartTime = Date.now();
+            blowBtn.classList.add('blowing');
+
+            holdInterval = setInterval(() => {
+                if (!isHolding) return;
+
+                const elapsed = Date.now() - holdStartTime;
+                blowProgress = Math.min(elapsed / BLOW_HOLD_TIME, 1);
+
+                // Update circular progress
+                const offset = CIRCUMFERENCE * (1 - blowProgress);
+                progressCircle.style.strokeDashoffset = offset;
+
+                // Update flames progressively
+                updateFlamesDuringBlow(blowProgress);
+
+                // Update button text
+                if (blowProgress < 1) {
+                    blowBtn.querySelector('.blow-emoji').textContent = blowProgress > 0.5 ? '💨' : '🌬️';
+                }
+
+                // Complete!
+                if (blowProgress >= 1) {
+                    completeBlowOut();
+                }
+            }, 30);
+        }
+
+        // ── Hold end (released early) ────────────────────────
+        function stopBlow() {
+            if (!isHolding) return;
+            isHolding = false;
+            clearInterval(holdInterval);
+            blowBtn.classList.remove('blowing');
+
+            // If not complete, revert flames back
+            if (candlesLit && blowProgress < 1) {
+                const flames = document.querySelectorAll('.flame-wrapper');
+                flames.forEach(flame => {
+                    if (!flame.classList.contains('extinguished')) {
+                        flame.style.transform = '';
+                        flame.style.opacity = '';
+                    }
+                });
+
+                // Reset progress ring smoothly
+                blowProgress = 0;
+                progressCircle.style.strokeDashoffset = CIRCUMFERENCE;
+
+                // Reset glow
+                document.getElementById('candleGlow').style.opacity = '';
+
+                blowBtn.querySelector('.blow-emoji').textContent = '🌬️';
+            }
+        }
+
+        // ── Complete blow out ─────────────────────────────────
+        function completeBlowOut() {
+            clearInterval(holdInterval);
+            isHolding = false;
+            blowBtn.classList.remove('blowing');
+            extinguishCandles();
+        }
+
+        // ── Event listeners (works on both PC + mobile) ──────
+        blowBtn.addEventListener('mousedown', startBlow);
+        blowBtn.addEventListener('mouseup', stopBlow);
+        blowBtn.addEventListener('mouseleave', stopBlow);
+        blowBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startBlow(); });
+        blowBtn.addEventListener('touchend', (e) => { e.preventDefault(); stopBlow(); });
+        blowBtn.addEventListener('touchcancel', stopBlow);
+
+        // ══════════════════════════════════════════════════════
+        // ── SHAKE DETECTION (Mobile) ─────────────────────────
+        // ══════════════════════════════════════════════════════
+        let lastShakeTime = 0;
+        const SHAKE_THRESHOLD = 25;
+
+        function handleMotion(event) {
+            if (!candlesLit) return;
+
+            const acc = event.accelerationIncludingGravity;
+            if (!acc) return;
+
+            const totalAcc = Math.sqrt(acc.x * acc.x + acc.y * acc.y + acc.z * acc.z);
+
+            if (totalAcc > SHAKE_THRESHOLD) {
+                const now = Date.now();
+                if (now - lastShakeTime > 1000) {
+                    lastShakeTime = now;
+                    extinguishCandles();
+                }
+            }
+        }
+
+        // Request motion permission (iOS 13+)
+        if (typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+            document.addEventListener('click', function requestMotion() {
+                DeviceMotionEvent.requestPermission()
+                    .then(response => {
+                        if (response === 'granted') {
+                            window.addEventListener('devicemotion', handleMotion);
+                        }
+                    });
+                document.removeEventListener('click', requestMotion);
+            }, { once: true });
+        } else {
+            window.addEventListener('devicemotion', handleMotion);
+        }
+
+        // ══════════════════════════════════════════════════════
+        // ── SWIPE UP DETECTION ───────────────────────────────
+        // ══════════════════════════════════════════════════════
+        let touchStartY = 0;
+
+        document.addEventListener('touchstart', (e) => {
+            touchStartY = e.touches[0].clientY;
+        }, { passive: true });
+
+        document.addEventListener('touchend', (e) => {
+            if (!candlesLit) return;
+            const touchEndY = e.changedTouches[0].clientY;
+            const swipeDistance = touchStartY - touchEndY;
+
+            if (swipeDistance > 80) {
+                extinguishCandles();
+            }
+        }, { passive: true });
+
+        // ══════════════════════════════════════════════════════
+        // ── EXTINGUISH CANDLES ───────────────────────────────
+        // ══════════════════════════════════════════════════════
+        function extinguishCandles() {
+            if (!candlesLit) return;
+            candlesLit = false;
+
+            // Stop hold interval if running
+            if (holdInterval) clearInterval(holdInterval);
+
+            // Play whoosh sound
+            playWhooshSound();
+
+            // Extinguish all remaining flames
+            const flames = document.querySelectorAll('.flame-wrapper');
+            const delays = [0, 80, 40, 130, 100];
+
+            flames.forEach((flame, i) => {
+                if (!flame.classList.contains('extinguished')) {
+                    setTimeout(() => {
+                        flame.classList.add('extinguished');
+                        flame.style.transform = '';
+                        flame.style.opacity = '';
+                        if (!flame.dataset.smoked) {
+                            spawnSmoke(flame);
+                        }
+                    }, delays[i]);
+                }
+            });
+
+            // Fade candle glow
+            document.getElementById('candleGlow').classList.add('off');
+
+            // Hide blow button
+            document.querySelector('.blow-btn-container').style.display = 'none';
+            document.querySelector('.blow-instruction').textContent = '✨ Candles blown out! ✨';
+
+            // After candles go out, transition to celebration
+            setTimeout(() => {
+                transitionToCelebration();
+            }, 1200);
+        }
+
+        function spawnSmoke(flameEl) {
+            const rect = flameEl.getBoundingClientRect();
+            for (let i = 0; i < 3; i++) {
+                const smoke = document.createElement('div');
+                smoke.className = 'smoke';
+                smoke.style.left = (rect.left + rect.width / 2 - 15 + (Math.random() * 20 - 10)) + 'px';
+                smoke.style.top = (rect.top - 10) + 'px';
+                smoke.style.animationDelay = (i * 0.15) + 's';
+                document.body.appendChild(smoke);
+                setTimeout(() => smoke.remove(), 2000);
+            }
+        }
+
+        // ══════════════════════════════════════════════════════
+        // ── TRANSITION TO CELEBRATION ────────────────────────
+        // ══════════════════════════════════════════════════════
+        function transitionToCelebration() {
+            // Silver ring burst
+            const centerX = window.innerWidth / 2;
+            const centerY = window.innerHeight / 2;
+            for (let i = 0; i < 4; i++) {
+                const ring = document.createElement('div');
+                ring.className = 'silver-ring';
+                ring.style.left = centerX + 'px';
+                ring.style.top = centerY + 'px';
+                ring.style.animationDelay = (i * 0.2) + 's';
+                const colors = ['#c0c0c0', '#ffd700', '#c0c0c0', '#fff'];
+                ring.style.borderColor = colors[i];
+                document.body.appendChild(ring);
+                setTimeout(() => ring.remove(), 1500);
+            }
+
+            // Play celebration sound
+            playCelebrationSound();
+
+            // Switch pages
+            setTimeout(() => {
+                document.getElementById('cakePage').style.display = 'none';
+                document.getElementById('celebrationPage').style.display = 'block';
+                document.body.classList.remove('scene-cake');
+                document.body.classList.add('scene-celebration');
+
+                // Change floating sparkles to celebration emojis
+                sparkleEmojis.length = 0;
+                sparkleEmojis.push('🎉', '🥳', '🎊', '💖', '✨', '🌟', '🥂', '👑', '💎');
+
+                // Confetti explosion
+                createConfetti();
+                setTimeout(createConfetti, 600);
+                setTimeout(createConfetti, 1200);
+
+                // Fireworks
+                launchFireworks();
+                setTimeout(launchFireworks, 800);
+                setTimeout(launchFireworks, 1600);
+                setTimeout(launchFireworks, 2400);
+            }, 400);
+        }
+
+        // ══════════════════════════════════════════════════════
+        // ── CONFETTI ─────────────────────────────────────────
+        // ══════════════════════════════════════════════════════
+        function createConfetti() {
+            const colors = ['#c0c0c0', '#ffd700', '#e8e8e8', '#ff6ec7', '#667eea', '#ff4081', '#00e5ff', '#fff'];
+            const shapes = ['■', '●', '▲', '♦', '★', '◆'];
+
+            for (let i = 0; i < 80; i++) {
+                setTimeout(() => {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.textContent = shapes[Math.floor(Math.random() * shapes.length)];
+                    confetti.style.left = Math.random() * window.innerWidth + 'px';
+                    confetti.style.top = '-15px';
+                    confetti.style.color = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.fontSize = (Math.random() * 14 + 8) + 'px';
+                    confetti.style.animationDuration = (Math.random() * 2.5 + 2) + 's';
+                    confetti.style.animationDelay = (Math.random() * 0.3) + 's';
+                    document.body.appendChild(confetti);
+
+                    setTimeout(() => confetti.remove(), 5500);
+                }, i * 20);
+            }
+        }
+
+        // ══════════════════════════════════════════════════════
+        // ── FIREWORKS ────────────────────────────────────────
+        // ══════════════════════════════════════════════════════
+        function launchFireworks() {
+            const colors = ['#ffd700', '#c0c0c0', '#ff6ec7', '#00e5ff', '#ff4081', '#fff'];
+
+            for (let burst = 0; burst < 3; burst++) {
+                setTimeout(() => {
+                    const cx = Math.random() * window.innerWidth * 0.8 + window.innerWidth * 0.1;
+                    const cy = Math.random() * window.innerHeight * 0.4 + window.innerHeight * 0.1;
+                    const color = colors[Math.floor(Math.random() * colors.length)];
+                    const particles = 30 + Math.floor(Math.random() * 20);
+
+                    for (let i = 0; i < particles; i++) {
+                        const particle = document.createElement('div');
+                        particle.className = 'firework';
+                        particle.style.backgroundColor = color;
+                        particle.style.boxShadow = `0 0 6px ${color}`;
+
+                        const angle = (Math.PI * 2 * i) / particles;
+                        const dist = 60 + Math.random() * 100;
+                        const endX = cx + Math.cos(angle) * dist;
+                        const endY = cy + Math.sin(angle) * dist;
+
+                        particle.style.left = cx + 'px';
+                        particle.style.top = cy + 'px';
+
+                        // Custom trajectory via inline animation
+                        particle.style.transition = 'all 1s cubic-bezier(0, 0.5, 0.5, 1)';
+                        document.body.appendChild(particle);
+
+                        requestAnimationFrame(() => {
+                            particle.style.left = endX + 'px';
+                            particle.style.top = endY + 'px';
+                            particle.style.opacity = '0';
+                        });
+
+                        setTimeout(() => particle.remove(), 1500);
+                    }
+                }, burst * 500);
+            }
+        }
+    </script>
+</body>
+</html>
