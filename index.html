@@ -358,82 +358,91 @@
             50% { transform: scale(1.15); }
         }
 
-        /* ── Mic status & volume meter ────────────────── */
+        /* ── Audio sensing (hidden from UI) ──────────── */
         .mic-section {
-            margin: 8px auto 4px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
+            display: none !important;
         }
 
-        .mic-status {
-            font-size: 0.8rem;
-            color: rgba(255, 255, 255, 0.5);
-            margin-top: 4px;
-            min-height: 20px;
-            transition: color 0.3s ease;
-        }
-
-        .mic-status.active {
-            color: #69f0ae;
-            font-weight: 500;
-        }
-
-        .mic-status.calibrating {
-            color: #64b5f6;
-        }
-
-        .mic-status.denied {
-            color: #ff8a80;
-        }
-
-        .enable-mic-btn {
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.25), rgba(255, 106, 0, 0.25));
-            border: 1px solid rgba(255, 215, 0, 0.6);
-            color: #ffd700;
-            padding: 8px 18px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            margin: 8px auto 4px;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
+        /* ── Blow Intensity Meter ─────────────────────── */
+        .blow-meter-wrapper {
+            width: 260px;
+            max-width: 85vw;
+            margin: 12px auto 14px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            padding: 10px 14px;
+            border-radius: 16px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
             transition: all 0.3s ease;
-            backdrop-filter: blur(8px);
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
-            -webkit-tap-highlight-color: transparent;
         }
 
-        .enable-mic-btn:hover, .enable-mic-btn:active {
-            transform: scale(1.05);
-            background: linear-gradient(135deg, rgba(255, 215, 0, 0.4), rgba(255, 106, 0, 0.4));
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.4);
+        .blow-meter-wrapper.blowing {
+            border-color: rgba(255, 215, 0, 0.6);
+            box-shadow: 0 0 25px rgba(255, 106, 0, 0.35);
         }
 
-        .volume-meter {
-            width: 220px;
-            height: 9px;
-            background: rgba(255, 255, 255, 0.12);
+        .blow-meter-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+            font-size: 0.82rem;
+            color: rgba(255, 255, 255, 0.8);
+            font-weight: 600;
+        }
+
+        .blow-meter-label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            color: #ffd700;
+        }
+
+        .blow-meter-val {
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.85rem;
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .blow-meter-track {
+            position: relative;
+            width: 100%;
+            height: 12px;
+            background: rgba(0, 0, 0, 0.45);
             border-radius: 10px;
-            margin: 6px auto;
             overflow: hidden;
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            display: none;
-            box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
         }
 
-        .volume-meter.visible {
-            display: block;
-        }
-
-        .volume-fill {
+        .blow-meter-fill {
             height: 100%;
             width: 0%;
             border-radius: 10px;
-            background: linear-gradient(90deg, #69f0ae, #ffd700);
-            transition: width 0.05s linear;
+            background: linear-gradient(90deg, #00e5ff 0%, #69f0ae 40%, #ffd700 70%, #ff3d00 100%);
+            transition: width 0.08s ease-out;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+        }
+
+        .blow-meter-target-line {
+            position: absolute;
+            right: 15%;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: rgba(255, 255, 255, 0.7);
+            box-shadow: 0 0 4px #fff;
+            pointer-events: none;
+        }
+
+        .blow-meter-hint {
+            margin-top: 6px;
+            font-size: 0.74rem;
+            color: rgba(255, 255, 255, 0.6);
+            font-style: italic;
+            transition: color 0.3s ease;
         }
 
         /* ── Hold-to-Blow button ──────────────────────── */
@@ -542,83 +551,69 @@
         /* ── SCENE 2: CELEBRATION PAGE ─────────────── */
         /* ══════════════════════════════════════════════ */
 
-        .celebration-title {
-            font-family: 'Great Vibes', cursive;
-            font-size: 4rem;
-            color: #fff;
-            text-shadow: 0 0 30px rgba(255, 215, 0, 0.5), 0 0 60px rgba(192, 192, 192, 0.3);
-            margin-bottom: 5px;
-            animation: celebGlow 2s ease-in-out infinite alternate;
+        .crown-emoji {
+            font-size: 2.6rem;
+            animation: crownBounce 1s ease-in-out infinite alternate;
+            display: block;
+            margin: 0 auto 2px;
         }
 
-        @keyframes celebGlow {
-            from { text-shadow: 0 0 20px rgba(255, 215, 0, 0.4), 0 0 40px rgba(192, 192, 192, 0.2); }
-            to { text-shadow: 0 0 40px rgba(255, 215, 0, 0.8), 0 0 80px rgba(192, 192, 192, 0.4), 0 0 120px rgba(255, 215, 0, 0.2); }
+        @keyframes crownBounce {
+            from { transform: translateY(0) rotate(-6deg); }
+            to { transform: translateY(-6px) rotate(6deg); }
+        }
+
+        .celebration-subtitle {
+            font-family: 'Great Vibes', cursive;
+            font-size: 2.2rem;
+            color: #ffd700;
+            text-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
+            margin: 0;
+            line-height: 1.15;
         }
 
         .celebration-name {
             font-family: 'Outfit', sans-serif;
-            font-size: 5rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, #c0c0c0, #ffd700, #fff, #c0c0c0, #ffd700);
-            background-size: 400% 400%;
+            font-size: 2.7rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #ffd700, #fff, #c0c0c0, #ffd700);
+            background-size: 300% 300%;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
             animation: shimmerName 3s linear infinite;
-            margin-bottom: 8px;
-            line-height: 1.1;
+            margin: 2px 0 6px;
+            letter-spacing: 1px;
+            line-height: 1.15;
         }
 
         @keyframes shimmerName {
             0% { background-position: 0% 50%; }
-            100% { background-position: 400% 50%; }
+            100% { background-position: 300% 50%; }
         }
 
-        .celebration-age {
+        .celebration-badge {
             display: inline-block;
-            font-size: 6rem;
-            font-weight: 800;
-            background: linear-gradient(180deg, #ffd700, #c0c0c0);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            text-shadow: none;
-            animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-            margin-bottom: 5px;
-        }
-
-        @keyframes bounceIn {
-            0% { transform: scale(0); opacity: 0; }
-            60% { transform: scale(1.2); opacity: 1; }
-            100% { transform: scale(1); }
-        }
-
-        .silver-jubilee-text {
-            font-size: 1.5rem;
+            font-size: 0.85rem;
             font-weight: 700;
-            letter-spacing: 8px;
+            letter-spacing: 2px;
             text-transform: uppercase;
-            background: linear-gradient(90deg, #c0c0c0, #fff, #ffd700, #fff, #c0c0c0);
-            background-size: 300% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: shimmerText 2.5s linear infinite;
-            margin-bottom: 20px;
-        }
-
-        @keyframes shimmerText {
-            to { background-position: 300% center; }
+            color: #ffd700;
+            background: rgba(255, 215, 0, 0.12);
+            border: 1px solid rgba(255, 215, 0, 0.35);
+            padding: 4px 14px;
+            border-radius: 20px;
+            margin-bottom: 8px;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.2);
         }
 
         .celebration-message {
-            color: rgba(255, 255, 255, 0.8);
-            font-size: 1.15rem;
-            line-height: 1.7;
-            max-width: 500px;
-            margin: 0 auto 20px;
-            font-weight: 300;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.95rem;
+            line-height: 1.45;
+            max-width: 460px;
+            margin: 0 auto 10px;
+            font-weight: 400;
         }
 
         .celebration-message strong {
@@ -627,32 +622,22 @@
         }
 
         .meme-img {
-            width: 320px;
-            max-width: 90%;
-            border-radius: 20px;
-            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5);
-            margin: 20px auto;
+            max-height: 250px;
+            max-width: 85vw;
+            width: auto;
+            border-radius: 16px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 25px rgba(255, 215, 0, 0.25);
+            border: 2px solid rgba(255, 215, 0, 0.4);
+            margin: 6px auto;
             display: block;
             animation: bounceIn 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55);
         }
 
-        .crown-emoji {
-            font-size: 4rem;
-            animation: crownBounce 1s ease-in-out infinite alternate;
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        @keyframes crownBounce {
-            from { transform: translateY(0) rotate(-5deg); }
-            to { transform: translateY(-8px) rotate(5deg); }
-        }
-
         .footer-note {
-            color: rgba(255, 255, 255, 0.3);
-            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.5);
+            font-size: 0.82rem;
             font-style: italic;
-            margin-top: 15px;
+            margin-top: 6px;
         }
 
         /* ── Confetti ─────────────────────────────────── */
@@ -699,47 +684,25 @@
             100% { width: 400px; height: 400px; opacity: 0; margin-top: -200px; margin-left: -200px; }
         }
 
-        /* ── Volume meter bar ─────────────────────────── */
-        .volume-meter {
-            width: 120px;
-            height: 6px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 3px;
-            margin: 8px auto 0;
-            overflow: hidden;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .volume-meter.visible {
-            opacity: 1;
-        }
-
-        .volume-fill {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, #4caf50, #ffd700, #ff4500);
-            border-radius: 3px;
-            transition: width 0.05s ease;
-        }
-
         /* ── Responsive ───────────────────────────────── */
         @media (max-width: 768px) {
-            .cake-title { font-size: 2.2rem; }
-            .celebration-title { font-size: 2.8rem; }
-            .celebration-name { font-size: 3.5rem; }
-            .celebration-age { font-size: 4.5rem; }
-            .silver-jubilee-text { font-size: 1.1rem; letter-spacing: 5px; }
-            .cake-container { transform: scale(0.85); margin-bottom: 15px; }
+            .cake-title { font-size: 2rem; }
+            .celebration-subtitle { font-size: 1.9rem; }
+            .celebration-name { font-size: 2.2rem; }
+            .celebration-badge { font-size: 0.78rem; letter-spacing: 1.5px; }
+            .celebration-message { font-size: 0.88rem; max-width: 90%; }
+            .meme-img { max-height: 220px; }
+            .cake-container { transform: scale(0.85); margin-bottom: 10px; }
         }
 
         @media (max-width: 400px) {
-            .cake-title { font-size: 1.8rem; }
-            .celebration-title { font-size: 2.2rem; }
-            .celebration-name { font-size: 2.8rem; }
-            .celebration-age { font-size: 3.5rem; }
-            .silver-jubilee-text { font-size: 0.9rem; letter-spacing: 3px; }
-            .cake-container { transform: scale(0.7); }
+            .cake-title { font-size: 1.7rem; }
+            .celebration-subtitle { font-size: 1.6rem; }
+            .celebration-name { font-size: 1.9rem; }
+            .celebration-badge { font-size: 0.72rem; }
+            .celebration-message { font-size: 0.82rem; }
+            .meme-img { max-height: 190px; }
+            .cake-container { transform: scale(0.72); }
         }
     </style>
 </head>
@@ -803,52 +766,58 @@
                 <div class="cake-layer cake-layer-bottom"></div>
             </div>
 
-            <!-- Blow detection -->
-            <p class="blow-instruction" id="blowInstruction">🌬️ Blow into your mic to extinguish the candles!</p>
-            <div class="mic-section">
-                <button class="enable-mic-btn" id="enableMicBtn">🎤 Enable Mic to Blow</button>
-                <div class="mic-status" id="micStatus">Tap button above to blow with your voice/breath</div>
-                <div class="volume-meter" id="volumeMeter">
-                    <div class="volume-fill" id="volumeFill"></div>
+            <!-- Fun Blow instruction (method hidden) -->
+            <p class="blow-instruction" id="blowInstruction">Make a wish & blow the candles before they melt! 🌬️🎂</p>
+
+            <!-- Blow Intensity Meter -->
+            <div class="blow-meter-wrapper" id="blowMeterWrapper">
+                <div class="blow-meter-header">
+                    <span class="blow-meter-label">🌬️ Blow Intensity</span>
+                    <span class="blow-meter-val" id="blowMeterVal">0%</span>
                 </div>
+                <div class="blow-meter-track">
+                    <div class="blow-meter-fill" id="volumeFill"></div>
+                    <div class="blow-meter-target-line" title="Blow Out Threshold"></div>
+                </div>
+                <p class="blow-meter-hint" id="blowMeterHint">Huff & puff to fill the meter! 💨</p>
             </div>
 
-            <!-- Hold button as fallback -->
-            <p style="color: rgba(255,255,255,0.35); font-size: 0.8rem; margin: 12px 0 5px;">or press & hold the button below</p>
+            <!-- Hidden audio sensing (runs silently behind the scenes) -->
+            <div class="mic-section" style="display: none;">
+                <button class="enable-mic-btn" id="enableMicBtn"></button>
+                <div class="mic-status" id="micStatus"></div>
+                <div class="volume-meter" id="volumeMeter"></div>
+            </div>
+
+            <!-- Blow / Hold Button -->
             <div class="blow-btn-container">
                 <button class="blow-btn" id="blowBtn">
                     <span class="blow-emoji">🌬️</span>
-                    <span class="blow-text">Hold to Blow</span>
+                    <span class="blow-text">Blow / Tap</span>
                 </button>
                 <svg class="blow-progress-ring" viewBox="0 0 150 150">
                     <circle id="progressCircle" cx="75" cy="75" r="70"></circle>
                 </svg>
             </div>
-            <p class="swipe-hint">on mobile: shake your phone or swipe up ↑</p>
+            <p class="swipe-hint">💨 Blow on the screen or hold the button!</p>
         </div>
 
         <!-- ══════ SCENE 2: CELEBRATION ══════ -->
         <div id="celebrationPage">
             <span class="crown-emoji">👑</span>
-            <p class="celebration-title">Happy Birthday</p>
-            <h1 class="celebration-name">RIDDHI!</h1>
-            <div class="celebration-age">25</div>
-            <p class="silver-jubilee-text">✦ Silver Jubilee ✦</p>
+            <p class="celebration-subtitle">Happy Birthday to our</p>
+            <h1 class="celebration-name">MALLU QUEEN! 🌴✨</h1>
+            <div class="celebration-badge">✦ Level 25 • Still Zero Adulting Skills 💅 ✦</div>
 
             <p class="celebration-message">
-                A quarter century of being <strong>absolutely amazing!</strong> 🥂<br>
-                Here's to 25 years of brilliance, laughter, and everything wonderful that makes you, <strong>YOU</strong>.<br><br>
-                May this milestone year bring you <strong>silver linings</strong> in every cloud, <strong>golden moments</strong> in every day, and <strong>diamond memories</strong> that last forever! 💎✨
+                A quarter century of pure drama, gossip & brilliance! 🥂<br>
+                May your 25th bring you endless biryani, zero hangovers, and unlimited rich-auntie energy! 💅💎
             </p>
 
             <img src="hbdrr.jpg" alt="Oh Guurl Happy Birthday" class="meme-img">
 
-            <p class="celebration-message" style="font-size: 1.4rem; color: #ffd700;">
-                🥳 Cheers to 25 more incredible years! 🥳
-            </p>
-
             <p class="footer-note">
-                (the candles may be out, but you still shine the brightest 🌟)
+                (Cheers to 25 more years of being iconic & chaotic! 🥳💖)
             </p>
         </div>
 
@@ -1102,40 +1071,31 @@
             // Combined blowing score: sensitive to both breath wind rumble and volume
             const blowScore = Math.max(rms, (lowFreqAvg / 255) * 0.35);
 
-            // ---- Calibration phase ----
+            // ---- Calibration in background ----
             if (calibrating) {
                 calibrationSamples.push(blowScore);
                 const elapsed = Date.now() - calibrationStart;
-                const progress = Math.min((elapsed / CALIBRATION_TIME) * 100, 100);
-
-                micStatus.textContent = `🎤 Calibrating... ${progress.toFixed(0)}%`;
-                volumeFill.style.width = progress + '%';
-                volumeFill.style.background = 'linear-gradient(90deg, #2196f3, #64b5f6)';
-
                 if (elapsed >= CALIBRATION_TIME) {
                     const mean = calibrationSamples.reduce((a, b) => a + b, 0) / calibrationSamples.length;
                     ambientBaseline = mean;
-                    // Threshold: baseline + 0.05, clamped between 0.08 and 0.20
                     blowThreshold = Math.min(Math.max(mean + 0.05, 0.08), 0.20);
                     calibrating = false;
-
-                    console.log(`Mic calibrated: baseline=${mean.toFixed(4)}, threshold=${blowThreshold.toFixed(4)}`);
-                    micStatus.textContent = '🌬️ Ready! Blow into your mic now!';
-                    micStatus.className = 'mic-status active';
+                    console.log(`Calibrated baseline=${mean.toFixed(4)}, threshold=${blowThreshold.toFixed(4)}`);
                 }
-
-                micAnimFrame = requestAnimationFrame(monitorMicBlow);
-                return;
             }
 
-            // ---- Detection phase ----
-            const meterPct = Math.min((blowScore / blowThreshold) * 100, 100);
+            // ---- Live Blow Intensity Meter (0% to 100%) ----
+            const meterPct = Math.min(Math.round((blowScore / blowThreshold) * 100), 100);
+            const blowMeterVal = document.getElementById('blowMeterVal');
+            const blowMeterHint = document.getElementById('blowMeterHint');
+            const blowMeterWrapper = document.getElementById('blowMeterWrapper');
+
             volumeFill.style.width = meterPct + '%';
+            if (blowMeterVal) blowMeterVal.textContent = meterPct + '%';
 
             if (blowScore > blowThreshold) {
-                volumeFill.style.background = 'linear-gradient(90deg, #ffd700, #ff4500)';
-                micStatus.textContent = '🌬️ Blowing detected... keep going!';
-                micStatus.className = 'mic-status active';
+                if (blowMeterWrapper) blowMeterWrapper.classList.add('blowing');
+                if (blowMeterHint) blowMeterHint.textContent = '🌬️ Blowing hard! Keep going!';
 
                 if (!isBlowing) {
                     isBlowing = true;
@@ -1149,12 +1109,10 @@
                 updateFlamesDuringBlow(blowRatio);
 
                 if (blowDuration >= BLOW_SUSTAIN) {
-                    micStatus.textContent = '✨ Candles blown out!';
                     extinguishCandles();
                     return;
                 }
             } else {
-                volumeFill.style.background = 'linear-gradient(90deg, #69f0ae, #ffd700)';
                 if (isBlowing) {
                     isBlowing = false;
                     const flames = document.querySelectorAll('.flame-wrapper');
@@ -1166,8 +1124,10 @@
                     });
                     document.getElementById('candleGlow').style.opacity = '';
                 }
-                micStatus.textContent = '🎤 Listening... blow into your mic!';
-                micStatus.className = 'mic-status active';
+                if (blowMeterWrapper) blowMeterWrapper.classList.remove('blowing');
+                if (blowMeterHint) {
+                    blowMeterHint.textContent = meterPct > 30 ? 'Blow harder to pass the line! 💨' : 'Huff & puff to fill the meter! 💨';
+                }
             }
 
             micAnimFrame = requestAnimationFrame(monitorMicBlow);
@@ -1244,6 +1204,18 @@
                 const offset = CIRCUMFERENCE * (1 - blowProgress);
                 progressCircle.style.strokeDashoffset = offset;
 
+                // Also update the blow intensity meter
+                const holdPct = Math.round(blowProgress * 100);
+                const blowFill = document.getElementById('volumeFill');
+                const blowVal = document.getElementById('blowMeterVal');
+                const blowHint = document.getElementById('blowMeterHint');
+                const blowWrap = document.getElementById('blowMeterWrapper');
+
+                if (blowFill) blowFill.style.width = holdPct + '%';
+                if (blowVal) blowVal.textContent = holdPct + '%';
+                if (blowWrap) blowWrap.classList.add('blowing');
+                if (blowHint) blowHint.textContent = '💨 Holding... blowing out!';
+
                 // Update flames progressively
                 updateFlamesDuringBlow(blowProgress);
 
@@ -1279,6 +1251,16 @@
                 // Reset progress ring smoothly
                 blowProgress = 0;
                 progressCircle.style.strokeDashoffset = CIRCUMFERENCE;
+
+                // Reset blow intensity meter
+                const blowFill = document.getElementById('volumeFill');
+                const blowVal = document.getElementById('blowMeterVal');
+                const blowHint = document.getElementById('blowMeterHint');
+                const blowWrap = document.getElementById('blowMeterWrapper');
+                if (blowFill) blowFill.style.width = '0%';
+                if (blowVal) blowVal.textContent = '0%';
+                if (blowWrap) blowWrap.classList.remove('blowing');
+                if (blowHint) blowHint.textContent = 'Huff & puff to fill the meter! 💨';
 
                 // Reset glow
                 document.getElementById('candleGlow').style.opacity = '';
@@ -1393,10 +1375,14 @@
             // Fade candle glow
             document.getElementById('candleGlow').classList.add('off');
 
-            // Hide blow button and mic section
+            // Hide blow button, intensity meter, and hints
             document.querySelector('.blow-btn-container').style.display = 'none';
+            const blowWrap = document.getElementById('blowMeterWrapper');
+            if (blowWrap) blowWrap.style.display = 'none';
             const micSec = document.querySelector('.mic-section');
             if (micSec) micSec.style.display = 'none';
+            const swipeHint = document.querySelector('.swipe-hint');
+            if (swipeHint) swipeHint.style.display = 'none';
             document.querySelector('.blow-instruction').textContent = '✨ Candles blown out! ✨';
 
             // Clean up microphone
