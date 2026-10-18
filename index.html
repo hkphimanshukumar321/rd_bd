@@ -573,12 +573,44 @@
             transform: translateX(-50%);
             width: 20px;
             height: 30px;
-            transition: opacity 0.5s ease, transform 0.5s ease;
+            transition: opacity 0.35s ease, transform 0.25s ease;
         }
 
         .flame-wrapper.extinguished {
-            opacity: 0;
-            transform: translateX(-50%) scale(0) translateY(10px);
+            opacity: 0 !important;
+            transform: translateX(-50%) scale(0) translateY(12px) !important;
+            pointer-events: none;
+        }
+
+        .flame-wrapper.sputter {
+            animation: flameSputter 0.45s ease-in-out forwards !important;
+        }
+
+        @keyframes flameSputter {
+            0% { transform: translateX(-50%) scale(0.85) rotate(-22deg); opacity: 0.95; }
+            25% { transform: translateX(-50%) scale(1.3) rotate(26deg); opacity: 1; filter: brightness(2.2); }
+            50% { transform: translateX(-50%) scale(0.55) rotate(-18deg); opacity: 0.7; }
+            75% { transform: translateX(-50%) scale(0.25) rotate(12deg); opacity: 0.35; }
+            100% { transform: translateX(-50%) scale(0) translateY(10px); opacity: 0; }
+        }
+
+        /* Ember sparks drifting from extinguished candles */
+        .ember {
+            position: fixed;
+            width: 3.5px;
+            height: 3.5px;
+            background: radial-gradient(circle, #fff, #ffd700 45%, #ff4500 85%);
+            border-radius: 50%;
+            box-shadow: 0 0 8px #ffd700, 0 0 12px #ff8c00;
+            pointer-events: none;
+            z-index: 101;
+            animation: emberRise 1.3s ease-out forwards;
+        }
+
+        @keyframes emberRise {
+            0% { opacity: 1; transform: translate(0, 0) scale(1); }
+            50% { opacity: 0.85; transform: translate(var(--drift-x, 10px), -40px) scale(0.85); }
+            100% { opacity: 0; transform: translate(calc(var(--drift-x, 10px) * 2), -90px) scale(0.2); }
         }
 
         .flame {
@@ -802,6 +834,31 @@
             animation: none;
         }
 
+        .start-sensors-btn.counting-down {
+            background: linear-gradient(135deg, rgba(255, 20, 147, 0.4), rgba(255, 215, 0, 0.4));
+            border-color: #ff1493;
+            color: #fff;
+            animation: pulseSensorsBtn 0.7s infinite alternate;
+        }
+
+        .cd-num {
+            display: inline-block;
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #fff;
+            background: #ff0055;
+            padding: 1px 9px;
+            border-radius: 12px;
+            margin: 0 4px;
+            animation: cdPulse 0.5s ease-in-out infinite alternate;
+            box-shadow: 0 0 12px rgba(255, 0, 85, 0.8);
+        }
+
+        @keyframes cdPulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.22); }
+        }
+
         /* ── Blow Intensity Meter ─────────────────────── */
         .blow-meter-wrapper {
             width: 260px;
@@ -971,19 +1028,80 @@
         /* ── Smoke puff ───────────────────────────────── */
         .smoke {
             position: fixed;
-            width: 30px;
-            height: 30px;
-            background: radial-gradient(circle, rgba(200, 200, 200, 0.5), transparent 70%);
+            width: 28px;
+            height: 28px;
+            background: radial-gradient(circle, rgba(220, 220, 220, 0.7), rgba(180, 180, 180, 0.35) 50%, transparent 75%);
             border-radius: 50%;
             pointer-events: none;
             z-index: 100;
-            animation: smokeRise 1.5s ease-out forwards;
+            animation: smokeRise 1.6s ease-out forwards;
+            filter: blur(1.5px);
         }
 
         @keyframes smokeRise {
-            0% { opacity: 0.6; transform: scale(0.5) translateY(0); }
-            50% { opacity: 0.3; transform: scale(1.5) translateY(-40px); }
-            100% { opacity: 0; transform: scale(2.5) translateY(-100px); }
+            0% { opacity: 0.75; transform: scale(0.4) translateY(0) rotate(0deg); }
+            40% { opacity: 0.55; transform: scale(1.4) translateY(-45px) rotate(35deg); }
+            100% { opacity: 0; transform: scale(2.8) translateY(-115px) rotate(90deg); }
+        }
+
+        /* ── PARTY BURST TRANSITION EFFECT ────────────── */
+        .party-burst-flash {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at center, rgba(255, 235, 120, 0.95), rgba(255, 105, 180, 0.8), rgba(0, 229, 255, 0.45), transparent 80%);
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0;
+            transform: scale(0.6);
+            transition: opacity 0.15s ease-out, transform 0.65s cubic-bezier(0.1, 0.9, 0.2, 1);
+        }
+
+        .party-burst-flash.bursting {
+            opacity: 1;
+            transform: scale(2.2);
+        }
+
+        .party-shockwave {
+            position: fixed;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9995;
+            border: 4px solid #ffd700;
+            box-shadow: 0 0 25px rgba(255, 215, 0, 0.85), inset 0 0 15px rgba(255, 105, 180, 0.6);
+            animation: partyShockwaveAnim 1.1s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+        }
+
+        @keyframes partyShockwaveAnim {
+            0% { width: 0; height: 0; opacity: 1; transform: translate(-50%, -50%) scale(0.2); }
+            100% { width: 950px; height: 950px; opacity: 0; transform: translate(-50%, -50%) scale(1); }
+        }
+
+        .party-burst-particle {
+            position: fixed;
+            pointer-events: none;
+            z-index: 9998;
+            will-change: transform, opacity;
+        }
+
+        .party-burst-emoji {
+            position: fixed;
+            font-size: 2.2rem;
+            pointer-events: none;
+            z-index: 10000;
+            animation: burstEmojiAnim 1.4s cubic-bezier(0.15, 0.85, 0.35, 1) forwards;
+            filter: drop-shadow(0 4px 10px rgba(0,0,0,0.5));
+        }
+
+        @keyframes burstEmojiAnim {
+            0% { opacity: 1; transform: translate(-50%, -50%) scale(0.3) rotate(0deg); }
+            35% { opacity: 1; transform: translate(calc(-50% + var(--tx, 0px)), calc(-50% + var(--ty, 0px))) scale(1.35) rotate(var(--rot, 30deg)); }
+            100% { opacity: 0; transform: translate(calc(-50% + var(--tx, 0px) * 1.3), calc(-50% + var(--ty, 0px) * 1.3 + 120px)) scale(0.8) rotate(calc(var(--rot, 30deg) * 2)); }
+        }
+
+        @keyframes celebPopIn {
+            0% { opacity: 0; transform: scale(0.88); }
+            60% { opacity: 1; transform: scale(1.03); }
+            100% { opacity: 1; transform: scale(1); }
         }
 
         /* ══════════════════════════════════════════════ */
@@ -1591,6 +1709,73 @@
             }, 600);
         }
 
+        // Soft puff sound when individual candle goes out
+        function playCandlePuffSound() {
+            try {
+                const ctx = getAudioCtx();
+                const now = ctx.currentTime;
+                const osc = ctx.createOscillator();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(280, now);
+                osc.frequency.exponentialRampToValueAtTime(70, now + 0.16);
+                const gain = ctx.createGain();
+                gain.gain.setValueAtTime(0.22, now);
+                gain.gain.exponentialRampToValueAtTime(0.005, now + 0.18);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.2);
+            } catch(e) {}
+        }
+
+        // Party Popper Explosion (POP! + THUMP! + Fanfare)
+        function playPartyPopperSound() {
+            try {
+                const ctx = getAudioCtx();
+                const now = ctx.currentTime;
+
+                // 1. POP transient (bandpassed noise burst)
+                const bufferSize = Math.floor(ctx.sampleRate * 0.18);
+                const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) {
+                    data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (ctx.sampleRate * 0.025));
+                }
+                const noise = ctx.createBufferSource();
+                noise.buffer = buffer;
+                const filter = ctx.createBiquadFilter();
+                filter.type = 'highpass';
+                filter.frequency.setValueAtTime(600, now);
+
+                const noiseGain = ctx.createGain();
+                noiseGain.gain.setValueAtTime(0.75, now);
+                noiseGain.gain.exponentialRampToValueAtTime(0.01, now + 0.18);
+
+                noise.connect(filter);
+                filter.connect(noiseGain);
+                noiseGain.connect(ctx.destination);
+                noise.start(now);
+
+                // 2. Bass thump (party cracker thud)
+                const osc = ctx.createOscillator();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(170, now);
+                osc.frequency.exponentialRampToValueAtTime(38, now + 0.38);
+
+                const oscGain = ctx.createGain();
+                oscGain.gain.setValueAtTime(0.85, now);
+                oscGain.gain.exponentialRampToValueAtTime(0.01, now + 0.42);
+
+                osc.connect(oscGain);
+                oscGain.connect(ctx.destination);
+                osc.start(now);
+                osc.stop(now + 0.45);
+
+                // 3. Cheerful fanfare immediately following
+                setTimeout(playCelebrationSound, 100);
+            } catch(e) {}
+        }
+
         // ══════════════════════════════════════════════════════
         // ── ULTRA-ROBUST BLOW DETECTION (Smartphone-Optimized) ─
         // ══════════════════════════════════════════════════════
@@ -1602,6 +1787,18 @@
         let sensorsInitialized = false;
         let cameraActive = false;
         let micActive = false;
+
+        // Countdown & Readiness phase
+        let isCountdownPhase = false;
+        let countdownTimer = null;
+        let blowReady = false; // TRUE only after countdown finishes!
+
+        // Candle state & progressive slow blowout
+        let blowProgress = 0; // 0 to 1
+        let minAchievedProgress = 0; // locks checkpoints so pausing breath doesn't relight blown candles
+        const extinguishedIndices = new Set();
+        const FLAME_ORDER = [2, 0, 4, 1, 3]; // Center, Left-outer, Right-outer, Left-inner, Right-inner
+        const FLAME_THRESHOLDS = [0.22, 0.44, 0.66, 0.85, 1.00];
 
         const volumeFill = document.getElementById('volumeFill');
         const blowMeterVal = document.getElementById('blowMeterVal');
@@ -1622,14 +1819,12 @@
         // Tracking variables
         let prevFrameBrightness = -1;
         let lastPoutScore = 0;
-        let sensorBlowStartTime = 0;
-        let isSensorBlowing = false;
 
-        // Rapid-tap tracking (tapping on cake area = blowing!)
+        // Rapid-tap tracking (tapping on cake area = stealth blow input!)
         let tapTimes = [];
         let tapBlowScore = 0;
 
-        // Accumulated blow energy (persists between frames for smoother UX)
+        // Accumulated blow energy
         let blowEnergy = 0;
 
         // Mic calibration: measure baseline noise for first ~30 frames
@@ -1639,9 +1834,6 @@
         const MIC_CALIBRATION_COUNT = 30;
 
         // ── Camera Proximity + Motion Detection ─────────────
-        // Instead of fragile pout detection, detect:
-        // 1. Face getting CLOSER (overall brightness drops as face fills frame)
-        // 2. Significant motion (leaning in to blow)
         function analyzeCameraProximity() {
             if (!cameraActive || !cameraVideo || cameraVideo.readyState < 2) return 0;
 
@@ -1649,7 +1841,6 @@
                 offCtx.drawImage(cameraVideo, 0, 0, 64, 64);
                 const frame = offCtx.getImageData(0, 0, 64, 64).data;
 
-                // Full-frame average brightness
                 let totalBrightness = 0;
                 let centerBrightness = 0;
                 let centerCount = 0;
@@ -1661,7 +1852,6 @@
                         const brightness = (frame[idx] * 299 + frame[idx+1] * 587 + frame[idx+2] * 114) / 1000;
                         totalBrightness += brightness;
 
-                        // Center region (face area when close)
                         if (x >= 16 && x < 48 && y >= 16 && y < 48) {
                             centerBrightness += brightness;
                             centerCount++;
@@ -1672,26 +1862,22 @@
                 const avgBrightness = totalBrightness / totalPixels;
                 const avgCenter = centerBrightness / (centerCount || 1);
 
-                // Score 1: Brightness change from previous frame (motion)
+                // Motion score
                 let motionScore = 0;
                 if (prevFrameBrightness >= 0) {
                     const brightnessDelta = Math.abs(avgBrightness - prevFrameBrightness);
-                    // Even small changes (3-15 units) from leaning in count
                     motionScore = Math.min(brightnessDelta / 8.0, 1.0);
                 }
                 prevFrameBrightness = avgBrightness;
 
-                // Score 2: Center getting darker relative to edges (face proximity)
-                // When you bring your face close, center gets darker/skin-colored
+                // Proximity score: face filling frame darkens center relative to edges
                 const edgeBrightness = (totalBrightness - centerBrightness) / (totalPixels - centerCount);
                 const proximityRatio = edgeBrightness / (avgCenter + 1);
                 const proximityScore = Math.min(Math.max((proximityRatio - 1.0) / 0.5, 0), 1.0);
 
-                // Combined: either motion or proximity triggers
                 let rawScore = Math.max(motionScore * 0.7, proximityScore) + (motionScore * 0.3);
                 rawScore = Math.min(rawScore, 1.0);
 
-                // Smooth
                 lastPoutScore = (lastPoutScore * 0.4) + (rawScore * 0.6);
                 return lastPoutScore;
             } catch (e) {
@@ -1699,13 +1885,11 @@
             }
         }
 
-        // ── Microphone Blow Analysis (ULTRA-SENSITIVE for smartphones)
-        // Uses raw time-domain RMS which bypasses FFT bin issues,
-        // plus low-frequency energy for wind detection
+        // ── Microphone Blow Analysis (ULTRA-SENSITIVE) ────────
         function analyzeMicBlow() {
             if (!analyser || !micActive) return 0;
 
-            // Method 1: Raw RMS from time domain (most reliable across devices)
+            // Raw RMS time-domain
             const timeData = new Float32Array(analyser.fftSize);
             analyser.getFloatTimeDomainData(timeData);
             let sumSq = 0;
@@ -1717,63 +1901,46 @@
             }
             const rms = Math.sqrt(sumSq / timeData.length);
 
-            // Calibrate baseline: first 30 frames set the noise floor
+            // Calibrate baseline noise during initial countdown
             if (micCalibrationFrames < MIC_CALIBRATION_COUNT) {
                 micCalibrationSum += rms;
                 micCalibrationFrames++;
                 if (micCalibrationFrames === MIC_CALIBRATION_COUNT) {
-                    micBaseline = (micCalibrationSum / MIC_CALIBRATION_COUNT) * 1.5 + 0.002;
+                    micBaseline = (micCalibrationSum / MIC_CALIBRATION_COUNT) * 1.4 + 0.003;
                 }
-                return 0; // Don't trigger during calibration
+                return 0;
             }
 
-            // Method 2: Low-frequency FFT energy (breath/wind signature)
+            // Low-frequency breath FFT
             const freqData = new Uint8Array(analyser.frequencyBinCount);
             analyser.getByteFrequencyData(freqData);
             let lowSum = 0;
             const lowBins = Math.min(10, freqData.length);
-            for (let i = 0; i < lowBins; i++) {
-                lowSum += freqData[i];
-            }
+            for (let i = 0; i < lowBins; i++) lowSum += freqData[i];
             const lowAvg = lowSum / lowBins;
 
-            // RMS score (above calibrated baseline)
-            // Smartphone resting noise with suppression off: RMS ~0.002-0.008
-            // Light blow: RMS ~0.01-0.03
-            // Medium blow: RMS ~0.03-0.08
-            // Hard blow: RMS ~0.08+
             const rmsAboveBaseline = Math.max(0, rms - micBaseline);
             const rmsScore = Math.min(rmsAboveBaseline / 0.025, 1.0);
-
-            // Peak amplitude score (catches sharp puffs)
             const peakScore = Math.min(Math.max((peakAmp - micBaseline * 2) / 0.06, 0), 1.0);
-
-            // Low-frequency score (wind is concentrated in low frequencies)
             const lowScore = Math.min(Math.max((lowAvg - 12) / 25, 0), 1.0);
 
-            // Take the best signal from all three methods
-            const bestScore = Math.max(rmsScore, peakScore * 0.9, lowScore * 0.85);
-            return bestScore;
+            return Math.max(rmsScore, peakScore * 0.9, lowScore * 0.85);
         }
 
         // ── Rapid Tap Detector (stealth blow input!) ─────────
-        // Tapping rapidly on the cake area acts like blowing
         function registerTap() {
-            if (!candlesLit) return;
+            if (!candlesLit || !blowReady) return;
             const now = Date.now();
             tapTimes.push(now);
-            // Keep only taps in the last 1.5 seconds
             tapTimes = tapTimes.filter(t => now - t < 1500);
 
-            // 3+ taps in 1.5s = blowing (ramps up with more taps)
-            if (tapTimes.length >= 3) {
-                tapBlowScore = Math.min((tapTimes.length - 2) / 4, 1.0);
+            if (tapTimes.length >= 2) {
+                tapBlowScore = Math.min((tapTimes.length - 1) / 4, 1.0);
             } else {
                 tapBlowScore = 0;
             }
         }
 
-        // Register taps on the cake area
         const cakeContainer = document.getElementById('cakeContainer');
         if (cakeContainer) {
             cakeContainer.addEventListener('click', registerTap);
@@ -1793,28 +1960,22 @@
             // Decay tap score over time
             const now = Date.now();
             tapTimes = tapTimes.filter(t => now - t < 1500);
-            if (tapTimes.length < 3) tapBlowScore *= 0.92;
+            if (tapTimes.length < 2) tapBlowScore *= 0.92;
 
-            // ── Combined Multi-Input Score ──
-            // ANY input contributing even partially helps!
+            // Combined multi-input score
             let combinedScore = 0;
-
-            // Add up all active sources (additive, not max)
             if (micActive) combinedScore += micScore * 0.7;
             if (cameraActive) combinedScore += camScore * 0.5;
-            combinedScore += tapBlowScore * 0.4;
+            combinedScore += tapBlowScore * 0.45;
 
-            // Bonus when multiple inputs fire together
             const activeInputs = (micScore > 0.15 ? 1 : 0) + (camScore > 0.15 ? 1 : 0) + (tapBlowScore > 0.1 ? 1 : 0);
             if (activeInputs >= 2) combinedScore *= 1.3;
-
             combinedScore = Math.min(combinedScore, 1.0);
 
-            // Smooth energy accumulator (builds up, decays slowly)
             if (combinedScore > 0.1) {
                 blowEnergy = Math.min(1.0, blowEnergy + combinedScore * 0.04);
             } else {
-                blowEnergy *= 0.96; // Slow decay
+                blowEnergy *= 0.96;
             }
 
             const displayScore = Math.max(combinedScore, blowEnergy);
@@ -1823,7 +1984,7 @@
             if (volumeFill) volumeFill.style.width = meterPct + '%';
             if (blowMeterVal) blowMeterVal.textContent = meterPct + '%';
 
-            // Camera visual feedback
+            // Camera bubble feedback
             if (camScore > 0.2) {
                 if (camPoutBadge) camPoutBadge.textContent = '✨ Whoosh! 🌬️';
                 if (candleCamBubble) candleCamBubble.classList.add('pouting');
@@ -1832,69 +1993,36 @@
                 if (candleCamBubble) candleCamBubble.classList.remove('pouting');
             }
 
-            // Blow threshold check
-            if (displayScore > 0.45) {
-                if (blowMeterWrapper) blowMeterWrapper.classList.add('blowing');
-
-                if (!isSensorBlowing) {
-                    isSensorBlowing = true;
-                    sensorBlowStartTime = Date.now();
-                }
-
-                const blowDuration = Date.now() - sensorBlowStartTime;
-                const blowRatio = Math.min(blowDuration / 600, 1); // 0.6s sustained blow
-
-                if (blowMeterHint) {
-                    if (blowRatio > 0.7) blowMeterHint.textContent = '🔥 Almost there!! 💨💨';
-                    else blowMeterHint.textContent = '🌬️ Keep blowing! 💨';
-                }
-
-                updateFlamesDuringBlow(blowRatio);
-
-                // Update the circular progress ring too
-                const offset = CIRCUMFERENCE * (1 - blowRatio);
-                progressCircle.style.strokeDashoffset = offset;
-
-                if (blowRatio >= 1) {
-                    extinguishCandles();
-                    return;
-                }
-            } else {
-                if (isSensorBlowing) {
-                    isSensorBlowing = false;
-                    // Only reset flames if we haven't progressed far
-                    const flames = document.querySelectorAll('.flame-wrapper');
-                    flames.forEach(flame => {
-                        if (!flame.classList.contains('extinguished')) {
-                            flame.style.transform = '';
-                            flame.style.opacity = '';
-                        }
-                    });
-                    const glow = document.getElementById('candleGlow');
-                    if (glow) glow.style.opacity = '';
-                    progressCircle.style.strokeDashoffset = CIRCUMFERENCE;
-                }
-                if (blowMeterWrapper) blowMeterWrapper.classList.remove('blowing');
-                if (blowMeterHint) {
-                    if (meterPct > 20) blowMeterHint.textContent = 'Keep going, blow harder! 💨';
-                    else blowMeterHint.textContent = 'Blow on your phone or tap the cake! 💨';
+            // ── Blow Accumulation (ONLY active after countdown completes!) ──
+            if (blowReady) {
+                if (displayScore > 0.38) {
+                    if (blowMeterWrapper) blowMeterWrapper.classList.add('blowing');
+                    // Accumulate progress smoothly over ~2.8s of sustained blow
+                    blowProgress = Math.min(1.0, blowProgress + (displayScore * 0.012));
+                    updateFlamesProgress(blowProgress);
+                } else {
+                    if (blowMeterWrapper) blowMeterWrapper.classList.remove('blowing');
+                    // Gentle decay back towards highest achieved checkpoint (so pausing to breathe is forgiving!)
+                    if (blowProgress > minAchievedProgress) {
+                        blowProgress = Math.max(minAchievedProgress, blowProgress - 0.005);
+                        updateFlamesProgress(blowProgress);
+                    }
                 }
             }
 
             sensorAnimFrame = requestAnimationFrame(runSensors);
         }
 
-        // ── Direct User Gesture Initialization (Mobile Compliant)
+        // ── Direct User Gesture Initialization with 3.5s Wait Countdown ──
         async function initSensors() {
             if (sensorsInitialized || !candlesLit) return;
             sensorsInitialized = true;
 
             if (startSensorsBtn) {
-                startSensorsBtn.textContent = '✨ Summoning birthday magic... 🧙‍♀️';
+                startSensorsBtn.innerHTML = '✨ Connecting Birthday Magic... 🪄';
             }
 
             try {
-                // Initialize AudioContext directly inside user interaction
                 const AudioCtxClass = window.AudioContext || window.webkitAudioContext;
                 if (!micAudioCtx && AudioCtxClass) {
                     micAudioCtx = new AudioCtxClass();
@@ -1907,15 +2035,13 @@
                     throw new Error('getUserMedia not supported');
                 }
 
-                // Try camera + mic together first
+                // Request camera + mic together
                 try {
                     mediaStream = await navigator.mediaDevices.getUserMedia({
                         audio: {
-                            // CRITICAL: Disable ALL processing that kills breath sound
                             echoCancellation: false,
                             noiseSuppression: false,
                             autoGainControl: false,
-                            // Some browsers support these extra constraints
                             channelCount: 1,
                             sampleRate: 44100
                         },
@@ -1928,7 +2054,7 @@
                     cameraActive = true;
                     micActive = true;
                 } catch (camErr) {
-                    // Fallback: try audio only with processing disabled
+                    // Audio-only fallback
                     try {
                         mediaStream = await navigator.mediaDevices.getUserMedia({
                             audio: {
@@ -1939,40 +2065,32 @@
                         });
                         micActive = true;
                     } catch (audioErr) {
-                        // Last resort: try audio with default settings
-                        try {
-                            mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                            micActive = true;
-                        } catch (e) {
-                            throw e;
-                        }
+                        mediaStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                        micActive = true;
                     }
                     cameraActive = false;
                 }
 
-                // Start camera video element
+                // Show camera video in selfie bubble
                 if (cameraActive && cameraVideo) {
                     cameraVideo.srcObject = mediaStream;
                     cameraVideo.play().catch(() => {});
                     if (candleCamContainer) candleCamContainer.style.display = 'flex';
                 }
 
-                // Setup Audio Analyser with settings optimized for breath detection
+                // Setup Audio Analyser
                 if (micActive && micAudioCtx) {
                     const source = micAudioCtx.createMediaStreamSource(mediaStream);
-
-                    // Add a low-pass filter to boost low-frequency breath sounds
                     const lowPass = micAudioCtx.createBiquadFilter();
                     lowPass.type = 'lowpass';
-                    lowPass.frequency.value = 800; // Breath air is mostly <500Hz
+                    lowPass.frequency.value = 800;
                     lowPass.Q.value = 0.7;
 
-                    // Boost gain to amplify quiet breath sounds
                     const boostGain = micAudioCtx.createGain();
-                    boostGain.gain.value = 3.0; // 3x amplification
+                    boostGain.gain.value = 3.0;
 
                     analyser = micAudioCtx.createAnalyser();
-                    analyser.fftSize = 1024; // More frequency resolution
+                    analyser.fftSize = 1024;
                     analyser.smoothingTimeConstant = 0.3;
 
                     source.connect(lowPass);
@@ -1980,19 +2098,70 @@
                     boostGain.connect(analyser);
                 }
 
+                // Start sensor loop (calibrates noise floor during countdown)
+                runSensors();
+
+                // ── 3.5 SECONDS COUNTDOWN / WAIT TIME ──
+                // Gives the person time to position their face, breathe in, and get ready!
+                isCountdownPhase = true;
+                blowReady = false;
+
                 if (startSensorsBtn) {
-                    startSensorsBtn.innerHTML = '✨ Magic Ready! Now blow the candles! 🌬️💨';
-                    startSensorsBtn.classList.add('active');
-                    setTimeout(() => {
-                        startSensorsBtn.style.opacity = '0';
-                        setTimeout(() => startSensorsBtn.style.display = 'none', 500);
-                    }, 2500);
+                    startSensorsBtn.classList.remove('active', 'fallback');
+                    startSensorsBtn.classList.add('counting-down');
+                    startSensorsBtn.innerHTML = '✨ Camera Active! Get close to screen... 🤳';
                 }
 
-                runSensors();
+                // Countdown step 3
+                setTimeout(() => {
+                    if (!candlesLit) return;
+                    if (startSensorsBtn) {
+                        startSensorsBtn.innerHTML = '🌬️ Inhale deep... <span class="cd-num">3</span> ⏳';
+                    }
+                    if (blowMeterHint) blowMeterHint.textContent = '✨ Take a deep breath... 3!';
+                }, 1000);
+
+                // Countdown step 2
+                setTimeout(() => {
+                    if (!candlesLit) return;
+                    if (startSensorsBtn) {
+                        startSensorsBtn.innerHTML = '🌬️ Position your breath... <span class="cd-num">2</span> 💨';
+                    }
+                    if (blowMeterHint) blowMeterHint.textContent = '🌬️ Get ready to blow... 2!';
+                }, 2000);
+
+                // Countdown step 1
+                setTimeout(() => {
+                    if (!candlesLit) return;
+                    if (startSensorsBtn) {
+                        startSensorsBtn.innerHTML = '🎂 Inhale big... <span class="cd-num">1</span> 🌬️';
+                    }
+                    if (blowMeterHint) blowMeterHint.textContent = '🎂 Almost time... 1!';
+                }, 3000);
+
+                // GO! Unlock blow detection
+                setTimeout(() => {
+                    if (!candlesLit) return;
+                    isCountdownPhase = false;
+                    blowReady = true;
+
+                    if (startSensorsBtn) {
+                        startSensorsBtn.classList.remove('counting-down');
+                        startSensorsBtn.classList.add('active');
+                        startSensorsBtn.innerHTML = '💨 NOW BLOW HARD ON THE SCREEN! 🌬️';
+                        setTimeout(() => {
+                            if (startSensorsBtn) {
+                                startSensorsBtn.style.opacity = '0';
+                                setTimeout(() => startSensorsBtn.style.display = 'none', 600);
+                            }
+                        }, 3500);
+                    }
+                    if (blowMeterHint) blowMeterHint.textContent = '💨 BLOW HARD on your phone or tap the cake!';
+                }, 3800);
 
             } catch (err) {
                 console.log('Sensors error:', err);
+                blowReady = true; // Still allow blowing via button / tap
                 if (startSensorsBtn) {
                     startSensorsBtn.textContent = '💨 Hold the big button below to blow!';
                     startSensorsBtn.classList.add('fallback');
@@ -2003,57 +2172,377 @@
             }
         }
 
-        // Only init sensors when the dedicated button is tapped (not on random page clicks)
+        // Only init sensors when the dedicated button is tapped
         if (startSensorsBtn) {
             startSensorsBtn.addEventListener('click', (e) => { e.stopPropagation(); initSensors(); });
             startSensorsBtn.addEventListener('touchend', (e) => { e.preventDefault(); e.stopPropagation(); initSensors(); });
         }
 
         // ══════════════════════════════════════════════════════
-        // ── HOLD-TO-BLOW (Always-available fallback) ─────────
+        // ── PROGRESSIVE CANDLE EXTINGUISHING & ANIMATION ─────
         // ══════════════════════════════════════════════════════
-        const blowBtn = document.getElementById('blowBtn');
         const progressCircle = document.getElementById('progressCircle');
         const CIRCUMFERENCE = 2 * Math.PI * 70;
-        progressCircle.style.strokeDasharray = CIRCUMFERENCE;
-        progressCircle.style.strokeDashoffset = CIRCUMFERENCE;
+        if (progressCircle) {
+            progressCircle.style.strokeDasharray = CIRCUMFERENCE;
+            progressCircle.style.strokeDashoffset = CIRCUMFERENCE;
+        }
 
-        const BLOW_HOLD_TIME = 1800;
-        let holdStartTime = 0;
-        let holdInterval = null;
-        let isHolding = false;
-        let blowProgress = 0;
+        function spawnDetailedSmoke(flameEl) {
+            if (!flameEl) return;
+            const rect = flameEl.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const topY = rect.top;
 
-        function updateFlamesDuringBlow(progress) {
-            const flames = document.querySelectorAll('.flame-wrapper');
-            const flameOrder = [2, 0, 4, 1, 3];
+            for (let i = 0; i < 4; i++) {
+                const smoke = document.createElement('div');
+                smoke.className = 'smoke';
+                const size = 20 + Math.random() * 16;
+                smoke.style.width = size + 'px';
+                smoke.style.height = size + 'px';
+                smoke.style.left = (centerX - size / 2 + (Math.random() * 14 - 7)) + 'px';
+                smoke.style.top = (topY - 10) + 'px';
+                smoke.style.animationDelay = (i * 0.12) + 's';
+                smoke.style.animationDuration = (1.5 + Math.random() * 0.6) + 's';
+                document.body.appendChild(smoke);
+                setTimeout(() => smoke.remove(), 2400);
+            }
+        }
 
-            flameOrder.forEach((idx, i) => {
-                const flame = flames[idx];
-                if (!flame) return;
+        function spawnEmbers(flameEl) {
+            if (!flameEl) return;
+            const rect = flameEl.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const topY = rect.top;
 
-                const flameStart = i * 0.15;
-                const flameEnd = flameStart + 0.35;
-                const flameProgress = Math.max(0, Math.min(1, (progress - flameStart) / (flameEnd - flameStart)));
+            for (let i = 0; i < 5; i++) {
+                const ember = document.createElement('div');
+                ember.className = 'ember';
+                ember.style.left = (centerX + (Math.random() * 10 - 5)) + 'px';
+                ember.style.top = topY + 'px';
+                ember.style.setProperty('--drift-x', (Math.random() * 32 - 16) + 'px');
+                ember.style.animationDelay = (i * 0.08) + 's';
+                ember.style.animationDuration = (1.0 + Math.random() * 0.5) + 's';
+                document.body.appendChild(ember);
+                setTimeout(() => ember.remove(), 1600);
+            }
+        }
 
-                if (flameProgress >= 1) {
-                    flame.classList.add('extinguished');
-                    if (!flame.dataset.smoked) {
-                        flame.dataset.smoked = 'true';
-                        spawnSmoke(flame);
-                        playWhooshSound();
-                    }
-                } else if (flameProgress > 0) {
-                    const scale = 1 - flameProgress * 0.8;
-                    const wobble = Math.sin(Date.now() * 0.02) * flameProgress * 15;
-                    flame.style.transform = `translateX(-50%) scale(${scale}) rotate(${wobble}deg)`;
-                    flame.style.opacity = 1 - flameProgress * 0.5;
+        function extinguishSingleCandle(flameIdx, stepIndex) {
+            if (extinguishedIndices.has(flameIdx)) return;
+            extinguishedIndices.add(flameIdx);
+            minAchievedProgress = FLAME_THRESHOLDS[stepIndex];
+
+            const flameWrapper = document.getElementById(`flame${flameIdx + 1}`);
+            if (flameWrapper) {
+                flameWrapper.classList.add('sputter');
+                spawnDetailedSmoke(flameWrapper);
+                spawnEmbers(flameWrapper);
+                playCandlePuffSound();
+
+                setTimeout(() => {
+                    flameWrapper.classList.remove('sputter');
+                    flameWrapper.classList.add('extinguished');
+                    flameWrapper.style.transform = '';
+                    flameWrapper.style.opacity = '';
+                }, 440);
+            }
+
+            // Dim ambient glow progressively
+            const litCount = 5 - extinguishedIndices.size;
+            const glow = document.getElementById('candleGlow');
+            if (glow) glow.style.opacity = (litCount / 5);
+
+            // Update Homelander speeches & blow hint dynamically
+            const leftSpeech = document.querySelector('.homelander-left .homelander-speech');
+            const rightSpeech = document.querySelector('.homelander-right .homelander-speech');
+
+            if (extinguishedIndices.size === 1) {
+                if (leftSpeech) leftSpeech.textContent = 'Keep going! 💨';
+                if (rightSpeech) rightSpeech.textContent = 'Good puff! 👏';
+                if (blowMeterHint) blowMeterHint.textContent = '🔥 1 candle down! Keep blowing! 💨';
+            } else if (extinguishedIndices.size === 2) {
+                if (leftSpeech) leftSpeech.textContent = 'Harder! 🌬️';
+                if (rightSpeech) rightSpeech.textContent = 'Almost half! 💪';
+                if (blowMeterHint) blowMeterHint.textContent = '🔥 2 down! You got this! 💨💨';
+            } else if (extinguishedIndices.size === 3) {
+                if (leftSpeech) leftSpeech.textContent = '3 down! 💨💨';
+                if (rightSpeech) rightSpeech.textContent = 'Finish it! 🔥';
+                if (blowMeterHint) blowMeterHint.textContent = '🔥 3 down! More than halfway! 🌬️';
+            } else if (extinguishedIndices.size === 4) {
+                if (leftSpeech) leftSpeech.textContent = 'LAST ONE! 🔥';
+                if (rightSpeech) rightSpeech.textContent = 'BLOW IT! 💨';
+                if (blowMeterHint) blowMeterHint.textContent = '🔥 Just 1 candle left! Give it everything! 💨💨💨';
+            } else if (extinguishedIndices.size === 5) {
+                if (leftSpeech) leftSpeech.textContent = 'SHE DID IT! 🥳';
+                if (rightSpeech) rightSpeech.textContent = 'MALLU QUEEN! 👑';
+                if (blowMeterHint) blowMeterHint.textContent = '✨ ALL CANDLES BLOWN OUT! 🥳🎉';
+            }
+        }
+
+        function updateFlamesProgress(progress) {
+            if (!candlesLit) return;
+
+            // Check each candle along threshold curve
+            FLAME_ORDER.forEach((flameIdx, step) => {
+                const threshold = FLAME_THRESHOLDS[step];
+                const flameEl = document.getElementById(`flame${flameIdx + 1}`);
+                if (!flameEl) return;
+
+                if (progress >= threshold) {
+                    extinguishSingleCandle(flameIdx, step);
+                } else if (!extinguishedIndices.has(flameIdx)) {
+                    // Candle is STILL lit: render wind tilt, vibration & shrink
+                    const stepStart = step === 0 ? 0 : FLAME_THRESHOLDS[step - 1];
+                    const localProg = Math.max(0, (progress - stepStart) / (threshold - stepStart));
+                    const wobble = Math.sin(Date.now() * 0.035 + flameIdx) * (14 + progress * 24);
+                    const scale = Math.max(0.38, 1 - (localProg * 0.45));
+                    flameEl.style.transform = `translateX(-50%) rotate(${wobble}deg) scale(${scale})`;
+                    flameEl.style.opacity = Math.max(0.45, 1 - (progress * 0.35));
                 }
             });
 
-            const glow = document.getElementById('candleGlow');
-            glow.style.opacity = 1 - progress;
+            // Update circular progress ring
+            if (progressCircle) {
+                const offset = CIRCUMFERENCE * (1 - progress);
+                progressCircle.style.strokeDashoffset = offset;
+            }
+
+            // If all 5 candles blown out: complete blowout!
+            if (extinguishedIndices.size === 5) {
+                finishCandlesBlowout();
+            }
         }
+
+        // ══════════════════════════════════════════════════════
+        // ── COMPLETE BLOWOUT & PARTY BURST TRANSITION ────────
+        // ══════════════════════════════════════════════════════
+        function finishCandlesBlowout() {
+            if (!candlesLit) return;
+            candlesLit = false;
+
+            if (holdInterval) clearInterval(holdInterval);
+
+            // Clean up camera & microphone streams
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => track.stop());
+                mediaStream = null;
+            }
+            if (sensorAnimFrame) {
+                cancelAnimationFrame(sensorAnimFrame);
+                sensorAnimFrame = null;
+            }
+            if (micAudioCtx && micAudioCtx.state !== 'closed') {
+                try { micAudioCtx.close(); } catch (e) {}
+            }
+
+            // Ambient glow completely off
+            const candleGlow = document.getElementById('candleGlow');
+            if (candleGlow) candleGlow.classList.add('off');
+
+            // Hide blow UI
+            const blowContainer = document.querySelector('.blow-btn-container');
+            if (blowContainer) blowContainer.style.display = 'none';
+            if (blowMeterWrapper) blowMeterWrapper.style.display = 'none';
+            const swipeHint = document.querySelector('.swipe-hint');
+            if (swipeHint) swipeHint.style.display = 'none';
+            if (candleCamContainer) candleCamContainer.style.display = 'none';
+            if (startSensorsBtn) startSensorsBtn.style.display = 'none';
+
+            const blowInst = document.querySelector('.blow-instruction');
+            if (blowInst) blowInst.textContent = '✨ All candles blown out! Make your wish, Mallu Queen! 🎂✨';
+
+            // Allow the user to admire the extinguished cake with curling smoke for 1.2s before party burst!
+            setTimeout(() => {
+                triggerPartyBurst();
+            }, 1200);
+        }
+
+        // ── Spectacular Party Burst Effect ───────────────────
+        function triggerPartyBurst() {
+            // 1. Play party popper sound & celebration fanfare
+            playPartyPopperSound();
+
+            // 2. Full-screen Party Burst Radiant Flash
+            const flash = document.createElement('div');
+            flash.className = 'party-burst-flash bursting';
+            document.body.appendChild(flash);
+            setTimeout(() => flash.remove(), 1200);
+
+            // 3. Shockwave rings radiating from the cake
+            const cakeRect = document.getElementById('cakeContainer').getBoundingClientRect();
+            const originX = cakeRect.left + cakeRect.width / 2;
+            const originY = cakeRect.top + cakeRect.height / 2;
+
+            for (let r = 0; r < 3; r++) {
+                const sw = document.createElement('div');
+                sw.className = 'party-shockwave';
+                sw.style.left = originX + 'px';
+                sw.style.top = originY + 'px';
+                sw.style.animationDelay = (r * 0.18) + 's';
+                if (r === 1) sw.style.borderColor = '#ff6ec7';
+                if (r === 2) sw.style.borderColor = '#00e5ff';
+                document.body.appendChild(sw);
+                setTimeout(() => sw.remove(), 1500);
+            }
+
+            // 4. Dual Cannons + Center Burst Confetti (140+ physics particles)
+            createPartyBurstConfetti(originX, originY);
+
+            // 5. Exploding Party Emojis
+            const emojis = ['🎉', '💥', '🍾', '✨', '🥳', '🎊', '👑', '🎂', '💖', '🌴'];
+            emojis.forEach((emoji, i) => {
+                const el = document.createElement('div');
+                el.className = 'party-burst-emoji';
+                el.textContent = emoji;
+                el.style.left = originX + 'px';
+                el.style.top = originY + 'px';
+                const angle = (i / emojis.length) * 2 * Math.PI + (Math.random() * 0.4 - 0.2);
+                const dist = 140 + Math.random() * 180;
+                const tx = Math.cos(angle) * dist;
+                const ty = Math.sin(angle) * dist - 50;
+                el.style.setProperty('--tx', tx + 'px');
+                el.style.setProperty('--ty', ty + 'px');
+                el.style.setProperty('--rot', (Math.random() * 80 - 40) + 'deg');
+                document.body.appendChild(el);
+                setTimeout(() => el.remove(), 1600);
+            });
+
+            // 6. Smoothly transition to Scene 2 (Celebration Page)
+            setTimeout(() => {
+                const cakePage = document.getElementById('cakePage');
+                const celebPage = document.getElementById('celebrationPage');
+                if (cakePage) cakePage.style.display = 'none';
+                if (celebPage) {
+                    celebPage.style.display = 'block';
+                    celebPage.style.animation = 'celebPopIn 0.8s cubic-bezier(0.18, 0.89, 0.32, 1.28) forwards';
+                }
+                document.body.classList.remove('scene-cake');
+                document.body.classList.add('scene-celebration');
+
+                sparkleEmojis.length = 0;
+                sparkleEmojis.push('🎉', '🥳', '🎊', '💖', '✨', '🌟', '🥂', '👑', '💎');
+
+                // Confetti showers over celebration page
+                createConfetti();
+                setTimeout(createConfetti, 500);
+                setTimeout(createConfetti, 1100);
+
+                // Fireworks
+                launchFireworks();
+                setTimeout(launchFireworks, 700);
+                setTimeout(launchFireworks, 1500);
+                setTimeout(launchFireworks, 2300);
+            }, 750);
+        }
+
+        // ── Confetti Cannon Physics Engine ───────────────────
+        function createPartyBurstConfetti(ox, oy) {
+            const colors = ['#ffd700', '#ff1493', '#00e5ff', '#ffeb3b', '#76ff03', '#e040fb', '#ffffff', '#ff6d00'];
+            const shapes = ['rect', 'star', 'circle', 'ribbon'];
+            const count = 130;
+
+            for (let i = 0; i < count; i++) {
+                const p = document.createElement('div');
+                p.className = 'party-burst-particle';
+                const color = colors[Math.floor(Math.random() * colors.length)];
+                const shape = shapes[Math.floor(Math.random() * shapes.length)];
+
+                let startX, startY, vx, vy;
+                const r = Math.random();
+                if (r < 0.36) {
+                    // Left cannon shooting up-right
+                    startX = 20;
+                    startY = window.innerHeight - 30;
+                    const angle = -(Math.PI * 0.22 + Math.random() * Math.PI * 0.25);
+                    const speed = 20 + Math.random() * 24;
+                    vx = Math.cos(angle) * speed;
+                    vy = Math.sin(angle) * speed;
+                } else if (r < 0.72) {
+                    // Right cannon shooting up-left
+                    startX = window.innerWidth - 20;
+                    startY = window.innerHeight - 30;
+                    const angle = -(Math.PI * 0.53 + Math.random() * Math.PI * 0.25);
+                    const speed = 20 + Math.random() * 24;
+                    vx = Math.cos(angle) * speed;
+                    vy = Math.sin(angle) * speed;
+                } else {
+                    // Center cake fountain explosion
+                    startX = ox + (Math.random() * 40 - 20);
+                    startY = oy + (Math.random() * 20 - 10);
+                    const angle = -Math.PI * (0.15 + Math.random() * 0.7);
+                    const speed = 15 + Math.random() * 22;
+                    vx = Math.cos(angle) * speed;
+                    vy = Math.sin(angle) * speed;
+                }
+
+                if (shape === 'star') {
+                    p.textContent = '★';
+                    p.style.color = color;
+                    p.style.fontSize = (12 + Math.random() * 14) + 'px';
+                } else if (shape === 'ribbon') {
+                    p.style.width = (14 + Math.random() * 12) + 'px';
+                    p.style.height = (5 + Math.random() * 4) + 'px';
+                    p.style.background = color;
+                    p.style.borderRadius = '2px';
+                } else if (shape === 'circle') {
+                    const size = 7 + Math.random() * 7;
+                    p.style.width = size + 'px';
+                    p.style.height = size + 'px';
+                    p.style.background = color;
+                    p.style.borderRadius = '50%';
+                } else {
+                    p.style.width = (8 + Math.random() * 8) + 'px';
+                    p.style.height = (8 + Math.random() * 8) + 'px';
+                    p.style.background = color;
+                }
+
+                p.style.left = startX + 'px';
+                p.style.top = startY + 'px';
+                document.body.appendChild(p);
+
+                let posX = startX;
+                let posY = startY;
+                let rot = Math.random() * 360;
+                let rotSpeed = (Math.random() * 16 - 8);
+                let curVx = vx;
+                let curVy = vy;
+                let gravity = 0.55;
+                let opacity = 1.0;
+                let life = 0;
+                const maxLife = 70 + Math.random() * 35;
+
+                function step() {
+                    life++;
+                    posX += curVx;
+                    posY += curVy;
+                    curVy += gravity;
+                    curVx *= 0.985;
+                    rot += rotSpeed;
+                    if (life > maxLife - 20) {
+                        opacity = Math.max(0, (maxLife - life) / 20);
+                    }
+                    p.style.transform = `translate3d(${posX - startX}px, ${posY - startY}px, 0) rotate(${rot}deg)`;
+                    p.style.opacity = opacity;
+
+                    if (life < maxLife && posY < window.innerHeight + 50) {
+                        requestAnimationFrame(step);
+                    } else {
+                        p.remove();
+                    }
+                }
+                requestAnimationFrame(step);
+            }
+        }
+
+        // ══════════════════════════════════════════════════════
+        // ── HOLD-TO-BLOW (Always-available fallback) ─────────
+        // ══════════════════════════════════════════════════════
+        const blowBtn = document.getElementById('blowBtn');
+        const BLOW_HOLD_TIME = 2600; // Takes a realistic 2.6s hold to blow out all candles
+        let holdStartTime = 0;
+        let holdInterval = null;
+        let isHolding = false;
 
         function startBlow() {
             if (!candlesLit || isHolding) return;
@@ -2065,25 +2554,25 @@
                 if (!isHolding) return;
 
                 const elapsed = Date.now() - holdStartTime;
-                blowProgress = Math.min(elapsed / BLOW_HOLD_TIME, 1);
-
-                const offset = CIRCUMFERENCE * (1 - blowProgress);
-                progressCircle.style.strokeDashoffset = offset;
+                const addedProgress = elapsed / BLOW_HOLD_TIME;
+                blowProgress = Math.min(1.0, minAchievedProgress + addedProgress);
 
                 const holdPct = Math.round(blowProgress * 100);
                 if (volumeFill) volumeFill.style.width = holdPct + '%';
                 if (blowMeterVal) blowMeterVal.textContent = holdPct + '%';
                 if (blowMeterWrapper) blowMeterWrapper.classList.add('blowing');
-                if (blowMeterHint) blowMeterHint.textContent = '💨 Blowing out the candles!';
 
-                updateFlamesDuringBlow(blowProgress);
+                updateFlamesProgress(blowProgress);
 
                 if (blowProgress < 1) {
                     blowBtn.querySelector('.blow-emoji').textContent = blowProgress > 0.5 ? '💨' : '🌬️';
                 }
 
                 if (blowProgress >= 1) {
-                    completeBlowOut();
+                    clearInterval(holdInterval);
+                    isHolding = false;
+                    blowBtn.classList.remove('blowing');
+                    finishCandlesBlowout();
                 }
             }, 30);
         }
@@ -2095,60 +2584,56 @@
             blowBtn.classList.remove('blowing');
 
             if (candlesLit && blowProgress < 1) {
-                const flames = document.querySelectorAll('.flame-wrapper');
-                flames.forEach(flame => {
-                    if (!flame.classList.contains('extinguished')) {
-                        flame.style.transform = '';
-                        flame.style.opacity = '';
-                    }
-                });
+                // Return to checkpoint
+                blowProgress = minAchievedProgress;
+                updateFlamesProgress(blowProgress);
 
-                blowProgress = 0;
-                progressCircle.style.strokeDashoffset = CIRCUMFERENCE;
-
-                if (volumeFill) volumeFill.style.width = '0%';
-                if (blowMeterVal) blowMeterVal.textContent = '0%';
+                if (volumeFill) volumeFill.style.width = Math.round(blowProgress * 100) + '%';
+                if (blowMeterVal) blowMeterVal.textContent = Math.round(blowProgress * 100) + '%';
                 if (blowMeterWrapper) blowMeterWrapper.classList.remove('blowing');
-                if (blowMeterHint) blowMeterHint.textContent = 'Blow on your phone or tap the cake! 💨';
-
-                document.getElementById('candleGlow').style.opacity = '';
                 blowBtn.querySelector('.blow-emoji').textContent = '🌬️';
             }
         }
 
-        function completeBlowOut() {
-            clearInterval(holdInterval);
-            isHolding = false;
-            blowBtn.classList.remove('blowing');
-            extinguishCandles();
+        if (blowBtn) {
+            blowBtn.addEventListener('mousedown', startBlow);
+            blowBtn.addEventListener('mouseup', stopBlow);
+            blowBtn.addEventListener('mouseleave', stopBlow);
+            blowBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startBlow(); });
+            blowBtn.addEventListener('touchend', (e) => { e.preventDefault(); stopBlow(); });
+            blowBtn.addEventListener('touchcancel', stopBlow);
         }
 
-        blowBtn.addEventListener('mousedown', startBlow);
-        blowBtn.addEventListener('mouseup', stopBlow);
-        blowBtn.addEventListener('mouseleave', stopBlow);
-        blowBtn.addEventListener('touchstart', (e) => { e.preventDefault(); startBlow(); });
-        blowBtn.addEventListener('touchend', (e) => { e.preventDefault(); stopBlow(); });
-        blowBtn.addEventListener('touchcancel', stopBlow);
+        // ══════════════════════════════════════════════════════
+        // ── SHAKE & SWIPE UP (Mobile Progressive Blow Trigger)
+        // ══════════════════════════════════════════════════════
+        function triggerProgressiveRapidBlow() {
+            if (!candlesLit) return;
+            let currentP = blowProgress;
+            const stepInterval = setInterval(() => {
+                currentP += 0.08;
+                blowProgress = Math.min(1.0, currentP);
+                updateFlamesProgress(blowProgress);
+                if (blowProgress >= 1) {
+                    clearInterval(stepInterval);
+                }
+            }, 55);
+        }
 
-        // ══════════════════════════════════════════════════════
-        // ── SHAKE DETECTION (Mobile) ─────────────────────────
-        // ══════════════════════════════════════════════════════
         let lastShakeTime = 0;
-        const SHAKE_THRESHOLD = 25;
+        const SHAKE_THRESHOLD = 26;
 
         function handleMotion(event) {
             if (!candlesLit) return;
-
             const acc = event.accelerationIncludingGravity;
             if (!acc) return;
 
             const totalAcc = Math.sqrt(acc.x * acc.x + acc.y * acc.y + acc.z * acc.z);
-
             if (totalAcc > SHAKE_THRESHOLD) {
                 const now = Date.now();
-                if (now - lastShakeTime > 1000) {
+                if (now - lastShakeTime > 1200) {
                     lastShakeTime = now;
-                    extinguishCandles();
+                    triggerProgressiveRapidBlow();
                 }
             }
         }
@@ -2167,11 +2652,7 @@
             window.addEventListener('devicemotion', handleMotion);
         }
 
-        // ══════════════════════════════════════════════════════
-        // ── SWIPE UP DETECTION ───────────────────────────────
-        // ══════════════════════════════════════════════════════
         let touchStartY = 0;
-
         document.addEventListener('touchstart', (e) => {
             touchStartY = e.touches[0].clientY;
         }, { passive: true });
@@ -2179,138 +2660,10 @@
         document.addEventListener('touchend', (e) => {
             if (!candlesLit) return;
             const touchEndY = e.changedTouches[0].clientY;
-            const swipeDistance = touchStartY - touchEndY;
-
-            if (swipeDistance > 80) {
-                extinguishCandles();
+            if (touchStartY - touchEndY > 80) {
+                triggerProgressiveRapidBlow();
             }
         }, { passive: true });
-
-        // ══════════════════════════════════════════════════════
-        // ── EXTINGUISH CANDLES ───────────────────────────────
-        // ══════════════════════════════════════════════════════
-        function extinguishCandles() {
-            if (!candlesLit) return;
-            candlesLit = false;
-
-            // Stop hold interval if running
-            if (holdInterval) clearInterval(holdInterval);
-
-            // Play whoosh sound
-            playWhooshSound();
-
-            // Extinguish all remaining flames
-            const flames = document.querySelectorAll('.flame-wrapper');
-            const delays = [0, 80, 40, 130, 100];
-
-            flames.forEach((flame, i) => {
-                if (!flame.classList.contains('extinguished')) {
-                    setTimeout(() => {
-                        flame.classList.add('extinguished');
-                        flame.style.transform = '';
-                        flame.style.opacity = '';
-                        if (!flame.dataset.smoked) {
-                            spawnSmoke(flame);
-                        }
-                    }, delays[i]);
-                }
-            });
-
-            // Fade candle glow
-            document.getElementById('candleGlow').classList.add('off');
-
-            // Hide blow button, intensity meter, camera bubble, and hints
-            document.querySelector('.blow-btn-container').style.display = 'none';
-            const blowWrap = document.getElementById('blowMeterWrapper');
-            if (blowWrap) blowWrap.style.display = 'none';
-            const micSec = document.querySelector('.mic-section');
-            if (micSec) micSec.style.display = 'none';
-            const swipeHint = document.querySelector('.swipe-hint');
-            if (swipeHint) swipeHint.style.display = 'none';
-            const camBubble = document.getElementById('candleCamContainer');
-            if (camBubble) camBubble.style.display = 'none';
-            const sBtn = document.getElementById('startSensorsBtn');
-            if (sBtn) sBtn.style.display = 'none';
-
-            document.querySelector('.blow-instruction').textContent = '✨ Candles blown out! ✨';
-
-            // Clean up camera & microphone streams
-            if (mediaStream) {
-                mediaStream.getTracks().forEach(track => track.stop());
-                mediaStream = null;
-            }
-            if (sensorAnimFrame) {
-                cancelAnimationFrame(sensorAnimFrame);
-                sensorAnimFrame = null;
-            }
-            if (micAudioCtx && micAudioCtx.state !== 'closed') {
-                try { micAudioCtx.close(); } catch (e) {}
-            }
-
-            // After candles go out, transition to celebration
-            setTimeout(() => {
-                transitionToCelebration();
-            }, 1200);
-        }
-
-        function spawnSmoke(flameEl) {
-            const rect = flameEl.getBoundingClientRect();
-            for (let i = 0; i < 3; i++) {
-                const smoke = document.createElement('div');
-                smoke.className = 'smoke';
-                smoke.style.left = (rect.left + rect.width / 2 - 15 + (Math.random() * 20 - 10)) + 'px';
-                smoke.style.top = (rect.top - 10) + 'px';
-                smoke.style.animationDelay = (i * 0.15) + 's';
-                document.body.appendChild(smoke);
-                setTimeout(() => smoke.remove(), 2000);
-            }
-        }
-
-        // ══════════════════════════════════════════════════════
-        // ── TRANSITION TO CELEBRATION ────────────────────────
-        // ══════════════════════════════════════════════════════
-        function transitionToCelebration() {
-            // Silver ring burst
-            const centerX = window.innerWidth / 2;
-            const centerY = window.innerHeight / 2;
-            for (let i = 0; i < 4; i++) {
-                const ring = document.createElement('div');
-                ring.className = 'silver-ring';
-                ring.style.left = centerX + 'px';
-                ring.style.top = centerY + 'px';
-                ring.style.animationDelay = (i * 0.2) + 's';
-                const colors = ['#c0c0c0', '#ffd700', '#c0c0c0', '#fff'];
-                ring.style.borderColor = colors[i];
-                document.body.appendChild(ring);
-                setTimeout(() => ring.remove(), 1500);
-            }
-
-            // Play celebration sound
-            playCelebrationSound();
-
-            // Switch pages
-            setTimeout(() => {
-                document.getElementById('cakePage').style.display = 'none';
-                document.getElementById('celebrationPage').style.display = 'block';
-                document.body.classList.remove('scene-cake');
-                document.body.classList.add('scene-celebration');
-
-                // Change floating sparkles to celebration emojis
-                sparkleEmojis.length = 0;
-                sparkleEmojis.push('🎉', '🥳', '🎊', '💖', '✨', '🌟', '🥂', '👑', '💎');
-
-                // Confetti explosion
-                createConfetti();
-                setTimeout(createConfetti, 600);
-                setTimeout(createConfetti, 1200);
-
-                // Fireworks
-                launchFireworks();
-                setTimeout(launchFireworks, 800);
-                setTimeout(launchFireworks, 1600);
-                setTimeout(launchFireworks, 2400);
-            }, 400);
-        }
 
         // ══════════════════════════════════════════════════════
         // ── CONFETTI ─────────────────────────────────────────
